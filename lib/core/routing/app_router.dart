@@ -38,6 +38,7 @@ import '../../presentation/screens/subjects/topic_create_screen.dart';
 import '../../presentation/screens/timetable/timetable_screen.dart';
 import '../constants/app_routes.dart';
 import '../localization/app_localizations.dart';
+import '../services/app_telemetry_service.dart';
 
 final routerNotifierProvider = ChangeNotifierProvider(
   (ref) => TeacherRouterNotifier(ref),
@@ -83,6 +84,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     debugLogDiagnostics: kDebugMode,
     refreshListenable: routerNotifier,
     redirect: routerNotifier.redirect,
+    observers: AppTelemetryService.navigatorObservers,
     routes: TeacherAppRouter.routes,
   );
 });
@@ -99,10 +101,12 @@ class TeacherAppRouter {
 
   static final List<RouteBase> routes = [
     GoRoute(
+      name: TeacherRoutes.login,
       path: TeacherRoutes.login,
       builder: (context, state) => const LoginScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.lessonSession,
       path: TeacherRoutes.lessonSession,
       builder: (context, state) {
         final sessionId = int.parse(state.pathParameters['id']!);
@@ -110,14 +114,17 @@ class TeacherAppRouter {
       },
     ),
     GoRoute(
+      name: TeacherRoutes.attendanceCreate,
       path: TeacherRoutes.attendanceCreate,
       builder: (context, state) => const AttendanceCreateScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.homeworkList,
       path: TeacherRoutes.homeworkList,
       builder: (context, state) => const HomeworkListScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.homeworkCreate,
       path: TeacherRoutes.homeworkCreate,
       builder: (context, state) {
         final sessionId = int.parse(state.pathParameters['sessionId']!);
@@ -125,6 +132,7 @@ class TeacherAppRouter {
       },
     ),
     GoRoute(
+      name: TeacherRoutes.homeworkCheck,
       path: TeacherRoutes.homeworkCheck,
       builder: (context, state) {
         final id = int.parse(state.pathParameters['id']!);
@@ -135,14 +143,17 @@ class TeacherAppRouter {
       },
     ),
     GoRoute(
+      name: TeacherRoutes.assessmentsList,
       path: TeacherRoutes.assessmentsList,
       builder: (context, state) => const AssessmentsListScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.assessmentCreate,
       path: TeacherRoutes.assessmentCreate,
       builder: (context, state) => const AssessmentCreateScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.assessmentResults,
       path: TeacherRoutes.assessmentResults,
       builder: (context, state) {
         final assessmentId = int.parse(state.pathParameters['id']!);
@@ -156,10 +167,12 @@ class TeacherAppRouter {
       },
     ),
     GoRoute(
+      name: TeacherRoutes.subjectsList,
       path: TeacherRoutes.subjectsList,
       builder: (context, state) => const SubjectsListScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.subjectDetail,
       path: TeacherRoutes.subjectDetail,
       builder: (context, state) {
         final id = int.parse(state.pathParameters['id']!);
@@ -170,6 +183,7 @@ class TeacherAppRouter {
       },
     ),
     GoRoute(
+      name: TeacherRoutes.topicCreate,
       path: TeacherRoutes.topicCreate,
       builder: (context, state) {
         final id = int.parse(state.pathParameters['id']!);
@@ -178,42 +192,52 @@ class TeacherAppRouter {
       },
     ),
     GoRoute(
+      name: TeacherRoutes.timetable,
       path: TeacherRoutes.timetable,
       builder: (context, state) => const TimetableScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.gradesList,
       path: TeacherRoutes.gradesList,
       builder: (context, state) => const GradesListScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.notifications,
       path: TeacherRoutes.notifications,
       builder: (context, state) => const NotificationsScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.events,
       path: TeacherRoutes.events,
       builder: (context, state) => const EventsScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.absenceReview,
       path: TeacherRoutes.absenceReview,
       builder: (context, state) => const AbsenceReviewScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.conferencesManage,
       path: TeacherRoutes.conferencesManage,
       builder: (context, state) => const ConferenceCreateScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.library,
       path: TeacherRoutes.library,
       builder: (context, state) => const LibraryScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.meal,
       path: TeacherRoutes.meal,
       builder: (context, state) => const MealsListScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.payments,
       path: TeacherRoutes.payments,
       builder: (context, state) => const PaymentsScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.paymentDetail,
       path: TeacherRoutes.paymentDetail,
       builder: (context, state) {
         final id = int.parse(state.pathParameters['studentId']!);
@@ -221,6 +245,7 @@ class TeacherAppRouter {
       },
     ),
     GoRoute(
+      name: TeacherRoutes.profileEdit,
       path: TeacherRoutes.profileEdit,
       builder: (context, state) {
         final profile = state.extra as ProfileResponse;
@@ -228,10 +253,12 @@ class TeacherAppRouter {
       },
     ),
     GoRoute(
+      name: TeacherRoutes.portfolioWorkCreate,
       path: TeacherRoutes.portfolioWorkCreate,
       builder: (context, state) => const PortfolioWorkCreateScreen(),
     ),
     GoRoute(
+      name: TeacherRoutes.chatRoom,
       path: TeacherRoutes.chatRoom,
       builder: (context, state) {
         final id = int.parse(state.pathParameters['userId']!);
@@ -246,18 +273,22 @@ class TeacherAppRouter {
       builder: (context, state, child) => MainNavigationLayout(child: child),
       routes: [
         GoRoute(
+          name: TeacherRoutes.dashboard,
           path: TeacherRoutes.dashboard,
           builder: (context, state) => const DashboardScreen(),
         ),
         GoRoute(
+          name: TeacherRoutes.lessons,
           path: TeacherRoutes.lessons,
           builder: (context, state) => const TodayLessonsScreen(),
         ),
         GoRoute(
+          name: TeacherRoutes.chat,
           path: TeacherRoutes.chat,
           builder: (context, state) => const ChatContactsScreen(),
         ),
         GoRoute(
+          name: TeacherRoutes.profile,
           path: TeacherRoutes.profile,
           builder: (context, state) => const TeacherProfileScreen(),
         ),

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "768810648147",
+    "project_id": "eschool-d6837",
+    "storage_bucket": "eschool-d6837.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:768810648147:android:19097a461a8b1e4f7e3ca6",
+        "android_client_info": {
+          "package_name": "uz.izlash.ranchschool.teacher_school_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArwdCh_ag3mmu0bK5YR7fj960MuruiyQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:768810648147:android:9faa025c1de661277e3ca6",
+        "android_client_info": {
+          "package_name": "uz.ranchschool.parent_school_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArwdCh_ag3mmu0bK5YR7fj960MuruiyQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

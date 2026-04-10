@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 
 import 'package:teacher_school_app/data/models/assessment_model.dart';
 import 'package:teacher_school_app/l10n/app_localizations.dart';
@@ -80,10 +81,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(
-        find.text(l10n.assessmentTypeLabelText('exam')),
-        findsAtLeastNWidgets(2),
-      );
+      expect(find.text(l10n.assessmentTypeLabelText('exam')), findsOneWidget);
+      expect(find.text(l10n.assessmentFallbackTitle), findsOneWidget);
       expect(find.text(l10n.unknownSubjectFallback), findsOneWidget);
     },
   );

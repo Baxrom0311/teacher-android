@@ -1,3 +1,7 @@
+import com.android.build.gradle.LibraryExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 allprojects {
     repositories {
         google()
@@ -17,6 +21,24 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
+}
+
+subprojects {
+    if (name != "pusher_client") {
+        return@subprojects
+    }
+
+    plugins.withId("com.android.library") {
+        extensions.findByType(LibraryExtension::class.java)?.let { android ->
+            if (android.namespace.isNullOrBlank()) {
+                android.namespace = "com.github.chinloyal.pusher_client"
+            }
+        }
+    }
+
+    tasks.withType(KotlinJvmCompile::class.java).configureEach {
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_1_8)
+    }
 }
 
 tasks.register<Delete>("clean") {

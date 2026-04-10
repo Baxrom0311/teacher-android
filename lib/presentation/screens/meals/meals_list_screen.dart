@@ -5,7 +5,6 @@ import 'dart:io';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/api_constants.dart';
-import 'package:teacher_school_app/l10n/app_localizations.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../providers/meal_provider.dart';

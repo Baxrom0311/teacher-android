@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 
 import 'package:teacher_school_app/data/models/lesson_model.dart';
 import 'package:teacher_school_app/data/repositories/lesson_repository.dart';

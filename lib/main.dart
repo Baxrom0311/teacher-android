@@ -11,6 +11,7 @@ import 'core/constants/app_colors.dart';
 import 'core/localization/app_locale.dart';
 import 'core/localization/l10n_extension.dart';
 import 'core/routing/app_router.dart';
+import 'core/services/app_telemetry_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/services/firebase_service.dart';
 import 'presentation/providers/app_locale_provider.dart';
@@ -21,10 +22,11 @@ import 'core/services/socket_listener.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  AppTelemetryService.installErrorHandlers();
   await SharedPrefsService.init();
   await Hive.initFlutter();
   await initializeDateFormatting();
-  unawaited(FirebaseService.init());
+  unawaited(AppTelemetryService.init());
 
   runApp(const ProviderScope(child: TeacherApp()));
 }
