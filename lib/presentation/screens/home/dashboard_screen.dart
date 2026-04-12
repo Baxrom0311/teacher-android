@@ -16,6 +16,12 @@ import '../../widgets/animations/staggered_fade_in.dart';
 import '../../widgets/sync_status_banner.dart';
 import '../../widgets/shared/stat_card.dart';
 import '../../widgets/shared/action_card.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/home/dashboard_stats_header.dart';
+import '../../widgets/home/bento_grid.dart';
+import '../../widgets/shared/app_empty_view.dart';
+import '../../widgets/shared/app_error_view.dart';
+import '../assessments/assessment_details_screen.dart'; // Just in case, but keep it clean
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -33,316 +39,191 @@ class DashboardScreen extends ConsumerWidget {
     final dashboardAsync = ref.watch(dashboardProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final currentThemeMode = ref.watch(appThemeModeProvider);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text(
-          l10n.dashboardAppBarGreeting(userName),
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor:
-            theme.appBarTheme.backgroundColor ?? colorScheme.surface,
-        foregroundColor:
-            theme.appBarTheme.foregroundColor ?? colorScheme.onSurface,
-        elevation: 0,
-        actions: [
-          PopupMenuButton<ThemeMode>(
-            tooltip: l10n.changeTheme,
-            initialValue: currentThemeMode,
-            onSelected: (themeMode) {
-              ref.read(appThemeModeProvider.notifier).setThemeMode(themeMode);
-            },
-            itemBuilder: (context) => ThemeMode.values
-                .map(
-                  (themeMode) => PopupMenuItem<ThemeMode>(
-                    value: themeMode,
-                    child: Row(
-                      children: [
-                        Icon(_themeModeIcon(themeMode), size: 18),
-                        const SizedBox(width: 10),
-                        Text(_themeModeLabel(themeMode, l10n)),
-                      ],
-                    ),
-                  ),
-                )
-                .toList(),
-            icon: Icon(
-              _themeModeIcon(currentThemeMode),
-              color: colorScheme.onSurface,
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.notifications_none),
-            onPressed: () => context.push(TeacherRoutes.notifications),
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => ref.invalidate(dashboardProvider),
-          ),
-        ],
-      ),
-      body: dashboardAsync.when(
-        data: (dashboard) => SafeArea(
-          child: RefreshIndicator(
+      body: PageBackground(
+        child: dashboardAsync.when(
+          data: (dashboard) => RefreshIndicator(
             onRefresh: () => _refresh(ref),
-            child: ListView(
+            displacement: 100,
+            color: colorScheme.primary,
+            child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              children: [
-                const SyncStatusBanner(),
-                const SizedBox(height: 8),
-                _DashboardHero(userName: userName, dashboard: dashboard),
-                const SizedBox(height: 20),
-                _PendingTasks(dashboard),
-                const SizedBox(height: 20),
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 1.45,
-                  children: [
-                    StaggeredFadeIn(
-                      index: 0,
-                      child: TeacherStatCard(
-                        icon: Icons.groups_2_outlined,
-                        label: l10n.dashboardGroupsLabel,
-                        value: dashboard.overview.groupsCount.toString(),
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                    StaggeredFadeIn(
-                      index: 1,
-                      child: TeacherStatCard(
-                        icon: Icons.menu_book_outlined,
-                        label: l10n.dashboardSubjectsLabel,
-                        value: dashboard.overview.subjectsCount.toString(),
-                        color: colorScheme.secondary,
-                      ),
-                    ),
-                    StaggeredFadeIn(
-                      index: 2,
-                      child: TeacherStatCard(
-                        icon: Icons.school_outlined,
-                        label: l10n.dashboardStudentsLabel,
-                        value: dashboard.overview.studentsCount.toString(),
-                        color: colorScheme.tertiary,
-                      ),
-                    ),
-                    StaggeredFadeIn(
-                      index: 3,
-                      child: TeacherStatCard(
-                        icon: Icons.person_off_outlined,
-                        label: l10n.dashboardAbsentLabel,
-                        value: dashboard.today.absentCount.toString(),
-                        color: colorScheme.error,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                _buildWeeklyInsights(context, dashboard),
-                const SizedBox(height: 24),
-                _buildAttendanceChart(context, dashboard),
-                const SizedBox(height: 24),
-                Text(
-                  l10n.dashboardQuickActionsTitle,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: colorScheme.onSurface,
+              slivers: [
+                // ─── Premium Header ───
+                SliverToBoxAdapter(
+                  child: DashboardStatsHeader(
+                    userName: userName,
+                    dashboard: dashboard,
                   ),
                 ),
-                const SizedBox(height: 16),
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.08,
-                  children: [
-                    TeacherActionCard(
-                      icon: Icons.assignment_turned_in,
-                      title: l10n.dashboardAttendanceAction,
-                      color: colorScheme.tertiary,
-                      onTap: () => context.push(TeacherRoutes.attendanceCreate),
-                    ),
-                    TeacherActionCard(
-                      icon: Icons.fact_check_outlined,
-                      title: l10n.dashboardExcusesAction,
-                      color: colorScheme.error,
-                      onTap: () => context.push(TeacherRoutes.absenceReview),
-                    ),
-                    TeacherActionCard(
-                      icon: Icons.people_alt_outlined,
-                      title: l10n.dashboardConferencesAction,
-                      color: colorScheme.primary,
-                      onTap: () =>
-                          context.push(TeacherRoutes.conferencesManage),
-                    ),
-                    TeacherActionCard(
-                      icon: Icons.home_work_outlined,
-                      title: l10n.dashboardHomeworkAction,
-                      color: colorScheme.secondary,
-                      onTap: () => context.push(TeacherRoutes.homeworkList),
-                    ),
-                    TeacherActionCard(
-                      icon: Icons.fact_check_outlined,
-                      title: l10n.dashboardAssessmentsAction,
-                      color: colorScheme.primary,
-                      onTap: () => context.push(TeacherRoutes.assessmentsList),
-                    ),
-                    TeacherActionCard(
-                      icon: Icons.auto_stories_outlined,
-                      title: l10n.dashboardSubjectsAction,
-                      color: colorScheme.tertiary,
-                      onTap: () => context.push(TeacherRoutes.subjectsList),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  l10n.dashboardRecentAssessmentsTitle,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: colorScheme.onSurface,
+
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 120),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      const SyncStatusBanner(),
+                      const SizedBox(height: 16),
+
+                      // ─── Upcoming Section ───
+                      if (dashboard.today.pendingExcusesCount > 0 || dashboard.today.activeConferencesCount > 0) ...[
+                        _SectionHeader(title: l10n.dashboardPendingTasksTitle),
+                        const SizedBox(height: 12),
+                        _PendingTasks(dashboard: dashboard),
+                        const SizedBox(height: 32),
+                      ],
+
+                      // ─── Bento Grid ───
+                      _SectionHeader(title: l10n.dashboardQuickActionsTitle),
+                      const SizedBox(height: 16),
+                      const BentoGrid(),
+                      const SizedBox(height: 32),
+
+                      // ─── Insights Section ───
+                      _SectionHeader(title: l10n.dashboardWeeklyInsightsTitle),
+                      const SizedBox(height: 16),
+                      _WeeklyInsights(dashboard: dashboard),
+                      const SizedBox(height: 32),
+
+                      // ─── Recent Assessments ───
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _SectionHeader(title: l10n.dashboardRecentAssessmentsTitle),
+                          TextButton(
+                            onPressed: () => context.push(TeacherRoutes.assessmentsList),
+                            child: Text(
+                              l10n.viewAll,
+                              style: TextStyle(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      if (dashboard.recentAssessments.isEmpty)
+                        AppEmptyView(
+                          title: l10n.dashboardRecentAssessmentsEmptyTitle,
+                          message: l10n.dashboardRecentAssessmentsEmptyMessage,
+                          icon: Icons.fact_check_outlined,
+                        )
+                      else
+                        ...dashboard.recentAssessments.take(3).map(
+                          (assessment) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _RecentAssessmentCard(assessment: assessment),
+                          ),
+                        ),
+                    ]),
                   ),
                 ),
-                const SizedBox(height: 12),
-                if (dashboard.recentAssessments.isEmpty)
-                  SizedBox(
-                    height: 180,
-                    child: AppEmptyView(
-                      title: l10n.dashboardRecentAssessmentsEmptyTitle,
-                      message: l10n.dashboardRecentAssessmentsEmptyMessage,
-                      icon: Icons.fact_check_outlined,
-                    ),
-                  )
-                else
-                  ...dashboard.recentAssessments.map(
-                    (assessment) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: _RecentAssessmentCard(assessment: assessment),
-                    ),
-                  ),
               ],
             ),
           ),
-        ),
-        loading: () => AppLoadingView(
-          title: l10n.dashboardLoadingTitle,
-          subtitle: l10n.dashboardLoadingSubtitle,
-        ),
-        error: (error, stack) => AppErrorView(
-          title: l10n.dashboardLoadErrorTitle,
-          message: ApiErrorHandler.readableMessage(error),
-          icon: Icons.space_dashboard_outlined,
-          onRetry: () => ref.invalidate(dashboardProvider),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => AppErrorView(
+            title: l10n.dashboardLoadErrorTitle,
+            message: ApiErrorHandler.readableMessage(error),
+            icon: Icons.space_dashboard_outlined,
+            onRetry: () => ref.invalidate(dashboardProvider),
+          ),
         ),
       ),
     );
   }
+}
 
-  int _attendanceRate(TeacherDashboardResponse dashboard) {
-    final totalStudents = dashboard.overview.studentsCount;
-    if (totalStudents <= 0) {
-      return 0;
-    }
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  const _SectionHeader({required this.title});
 
-    final presentStudents = (totalStudents - dashboard.today.absentCount).clamp(
-      0,
-      totalStudents,
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title.toUpperCase(),
+      style: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 1.2,
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+      ),
     );
-
-    return ((presentStudents / totalStudents) * 100).round();
   }
+}
 
-  String _themeModeLabel(ThemeMode themeMode, AppLocalizations l10n) {
-    return switch (themeMode) {
-      ThemeMode.system => l10n.themeSystem,
-      ThemeMode.light => l10n.themeLight,
-      ThemeMode.dark => l10n.themeDark,
-    };
-  }
 
-  IconData _themeModeIcon(ThemeMode themeMode) {
-    return switch (themeMode) {
-      ThemeMode.system => Icons.brightness_auto_rounded,
-      ThemeMode.light => Icons.light_mode_rounded,
-      ThemeMode.dark => Icons.dark_mode_rounded,
-    };
-  }
+class _WeeklyInsights extends StatelessWidget {
+  final TeacherDashboardResponse dashboard;
+  const _WeeklyInsights({required this.dashboard});
 
-  Widget _buildWeeklyInsights(
-    BuildContext context,
-    TeacherDashboardResponse dashboard,
-  ) {
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final attendanceRate = _attendanceRate(dashboard);
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
+    // Calculate attendance rate
+    final totalStudents = dashboard.overview.studentsCount;
+    final absentCount = dashboard.today.absentCount;
+    final attendanceRate = totalStudents > 0 
+        ? ((totalStudents - absentCount) / totalStudents * 100).round() 
+        : 0;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.dashboardWeeklyInsightsTitle,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: colorScheme.secondaryContainer.withValues(alpha: 0.35),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: colorScheme.secondary.withValues(alpha: 0.2),
+    return PremiumCard(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: colorScheme.secondary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
             ),
+            child: Icon(Icons.insights_rounded, color: colorScheme.secondary, size: 28),
           ),
-          child: Row(
-            children: [
-              Icon(Icons.insights, color: colorScheme.secondary, size: 32),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       l10n.dashboardAttendanceRateLabel(attendanceRate),
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
                     ),
-                    const SizedBox(height: 4),
-                    LinearProgressIndicator(
-                      value: attendanceRate / 100,
-                      backgroundColor: colorScheme.secondary.withValues(
-                        alpha: 0.12,
+                    Text(
+                      '$attendanceRate%',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 16,
+                        color: colorScheme.secondary,
                       ),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        colorScheme.secondary,
-                      ),
-                      borderRadius: BorderRadius.circular(4),
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: attendanceRate / 100,
+                    minHeight: 6,
+                    backgroundColor: colorScheme.secondary.withValues(alpha: 0.05),
+                    valueColor: AlwaysStoppedAnimation<Color>(colorScheme.secondary),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
+}
 
   Widget _buildAttendanceChart(
     BuildContext context,
@@ -607,52 +488,61 @@ class _HeroStat extends StatelessWidget {
 
 class _RecentAssessmentCard extends StatelessWidget {
   final RecentAssessmentData assessment;
-
   const _RecentAssessmentCard({required this.assessment});
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.7),
-        ),
-      ),
+    return PremiumCard(
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            assessment.title.isNotEmpty
-                ? assessment.title
-                : context.l10n.assessmentFallbackTitle,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  assessment.title.isNotEmpty ? assessment.title : l10n.assessmentFallbackTitle,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  l10n.dashboardAssessmentMaxScoreLabel(assessment.maxScore),
+                  style: TextStyle(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: [
               if (assessment.subjectName != null)
-                _AssessmentChip(label: assessment.subjectName!),
+                _AssessmentChip(label: assessment.subjectName!, icon: Icons.book_outlined),
               if (assessment.groupName != null)
-                _AssessmentChip(label: assessment.groupName!),
-              _AssessmentChip(
-                label: l10n.dashboardAssessmentMaxScoreLabel(
-                  assessment.maxScore,
-                ),
-              ),
+                _AssessmentChip(label: assessment.groupName!, icon: Icons.group_outlined),
               if (assessment.date != null)
                 _AssessmentChip(
                   label: _formatDate(assessment.date!, l10n.intlLocaleTag),
+                  icon: Icons.calendar_today_outlined,
                 ),
             ],
           ),
@@ -663,10 +553,7 @@ class _RecentAssessmentCard extends StatelessWidget {
 
   String _formatDate(String rawDate, String localeTag) {
     try {
-      return DateFormat(
-        'dd.MM.yyyy',
-        localeTag,
-      ).format(DateTime.parse(rawDate));
+      return DateFormat('dd.MM.yyyy', localeTag).format(DateTime.parse(rawDate));
     } catch (_) {
       return rawDate;
     }
@@ -675,27 +562,35 @@ class _RecentAssessmentCard extends StatelessWidget {
 
 class _AssessmentChip extends StatelessWidget {
   final String label;
+  final IconData icon;
 
-  const _AssessmentChip({required this.label});
+  const _AssessmentChip({required this.label, required this.icon});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(999),
+        color: Colors.white.withValues(alpha: 0.03),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: colorScheme.onSurfaceVariant,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: colorScheme.onSurface.withValues(alpha: 0.4)),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              color: colorScheme.onSurface.withValues(alpha: 0.6),
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -703,8 +598,7 @@ class _AssessmentChip extends StatelessWidget {
 
 class _PendingTasks extends StatelessWidget {
   final TeacherDashboardResponse dashboard;
-
-  const _PendingTasks(this.dashboard);
+  const _PendingTasks({required this.dashboard});
 
   @override
   Widget build(BuildContext context) {
@@ -713,54 +607,30 @@ class _PendingTasks extends StatelessWidget {
     final activeConferences = dashboard.today.activeConferencesCount;
     final colorScheme = Theme.of(context).colorScheme;
 
-    if (pendingExcuses == 0 && activeConferences == 0) {
-      return const SizedBox.shrink();
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.dashboardPendingTasksTitle,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 100,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              if (pendingExcuses > 0)
-                _TaskItem(
-                  title: l10n.dashboardExcusesAction,
-                  subtitle: l10n.dashboardPendingExcusesSubtitle(
-                    pendingExcuses,
-                  ),
-                  icon: Icons.assignment_late_outlined,
-                  color: colorScheme.error,
-                  onTap: () =>
-                      GoRouter.of(context).push(TeacherRoutes.absenceReview),
-                ),
-              if (activeConferences > 0)
-                _TaskItem(
-                  title: l10n.dashboardConferencesAction,
-                  subtitle: l10n.dashboardOpenConferenceSlotsSubtitle(
-                    activeConferences,
-                  ),
-                  icon: Icons.people_outline,
-                  color: colorScheme.primary,
-                  onTap: () => GoRouter.of(
-                    context,
-                  ).push(TeacherRoutes.conferencesManage),
-                ),
-            ],
-          ),
-        ),
-      ],
+    return SizedBox(
+      height: 100,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        clipBehavior: Colors.transparent == null ? Clip.hardEdge : Clip.none,
+        children: [
+          if (pendingExcuses > 0)
+            _TaskItem(
+              title: l10n.dashboardExcusesAction,
+              subtitle: l10n.dashboardPendingExcusesSubtitle(pendingExcuses),
+              icon: Icons.assignment_late_rounded,
+              color: TeacherAppColors.error,
+              onTap: () => context.push(TeacherRoutes.absenceReview),
+            ),
+          if (activeConferences > 0)
+            _TaskItem(
+              title: l10n.dashboardConferencesAction,
+              subtitle: l10n.dashboardOpenConferenceSlotsSubtitle(activeConferences),
+              icon: Icons.people_rounded,
+              color: colorScheme.primary,
+              onTap: () => context.push(TeacherRoutes.conferencesManage),
+            ),
+        ],
+      ),
     );
   }
 }
@@ -782,35 +652,28 @@ class _TaskItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final accentFill = color.withValues(
-      alpha: theme.brightness == Brightness.dark ? 0.18 : 0.1,
-    );
-    final accentBorder = color.withValues(
-      alpha: theme.brightness == Brightness.dark ? 0.28 : 0.2,
-    );
-    return GestureDetector(
+    return AnimatedPressable(
       onTap: onTap,
       child: Container(
-        width: 220,
+        width: 240,
         margin: const EdgeInsets.only(right: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: accentFill,
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: accentBorder),
+          border: Border.all(color: color.withValues(alpha: 0.15), width: 1.5),
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: accentBorder,
+                color: color.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 24),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -819,15 +682,18 @@ class _TaskItem extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: color.withValues(alpha: 0.9),
+                      fontWeight: FontWeight.w900,
+                      color: color,
+                      fontSize: 14,
                     ),
                   ),
+                  const SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: TextStyle(
                       fontSize: 12,
-                      color: color.withValues(alpha: 0.7),
+                      fontWeight: FontWeight.w600,
+                      color: color.withValues(alpha: 0.6),
                     ),
                   ),
                 ],

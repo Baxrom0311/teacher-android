@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/liquid_glass.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../providers/assessment_provider.dart';
+import '../../common/page_background.dart';
+import '../../common/premium_card.dart';
+import '../../common/animated_pressable.dart';
 import '../../widgets/app_feedback.dart';
 
 class AssessmentResultsScreen extends ConsumerStatefulWidget {
@@ -64,154 +65,211 @@ class _AssessmentResultsScreenState
     final state = ref.watch(assessmentControllerProvider);
     final isLoading = state.isLoading;
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text(widget.title),
-        backgroundColor:
-            theme.appBarTheme.backgroundColor ?? colorScheme.surface,
-        foregroundColor:
-            theme.appBarTheme.foregroundColor ?? colorScheme.onSurface,
-        elevation: 0,
-        actions: [
-          TextButton(
-            onPressed: isLoading ? null : _saveResults,
-            child: isLoading
-                ? SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: colorScheme.primary,
-                    ),
-                  )
-                : Text(
-                    l10n.saveAction,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: colorScheme.primary,
-                    ),
-                  ),
+    return PageBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(widget.title),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded),
+            onPressed: () => context.pop(),
           ),
-        ],
-      ),
-      body: resultsAsync.when(
-        data: (data) {
-          final results = data['results'] as List;
-
-          if (results.isEmpty) {
-            return Center(
-              child: Text(
-                l10n.assessmentNoStudents,
-                style: TextStyle(color: colorScheme.onSurfaceVariant),
-              ),
-            );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: results.length,
-            itemBuilder: (context, index) {
-              final res = results[index];
-              final sId = res.studentId.toString();
-
-              // Initialize map values from API if not edited yet
-              if (!_scores.containsKey(sId)) {
-                _scores[sId] = res.score;
-                _comments[sId] = res.comment;
-              }
-
-              return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: theme.cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: colorScheme.outline),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: AnimatedPressable(
+                onTap: isLoading ? null : _saveResults,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: colorScheme.primary.withValues(alpha: 0.3)),
+                  ),
+                  child: isLoading
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                            color: colorScheme.primary,
+                          ),
+                        )
+                      : Text(
+                          l10n.saveAction,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            color: colorScheme.primary,
+                          ),
+                        ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      res.studentName,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
+              ),
+            ),
+          ],
+        ),
+        body: resultsAsync.when(
+          data: (data) {
+            final results = data['results'] as List;
+
+            if (results.isEmpty) {
+              return Center(
+                child: AppEmptyView(
+                  title: l10n.assessmentNoStudents,
+                  icon: Icons.group_off_rounded,
+                ),
+              );
+            }
+
+            return ListView.builder(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+              itemCount: results.length,
+              itemBuilder: (context, index) {
+                final res = results[index];
+                final sId = res.studentId.toString();
+
+                if (!_scores.containsKey(sId)) {
+                  _scores[sId] = res.score;
+                  _comments[sId] = res.comment;
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: PremiumCard(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          l10n.assessmentScoreLabel,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          flex: 1,
-                          child: TextFormField(
-                            initialValue: _scores[sId]?.toString() ?? '',
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              hintText: l10n.assessmentScoreHint,
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
+                        Row(
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: colorScheme.secondary.withValues(alpha: 0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  res.studentName.isNotEmpty ? res.studentName[0].toUpperCase() : 'S',
+                                  style: TextStyle(
+                                    color: colorScheme.secondary,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
                               ),
                             ),
-                            onChanged: (val) {
-                              _scores[sId] = num.tryParse(val);
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Text(
-                          l10n.assessmentCommentLabel,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          flex: 2,
-                          child: TextFormField(
-                            initialValue: _comments[sId] ?? '',
-                            decoration: InputDecoration(
-                              hintText: l10n.assessmentCommentHintEmpty,
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                res.studentName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
-                            onChanged: (val) {
-                              _comments[sId] = val.trim().isEmpty
-                                  ? null
-                                  : val.trim();
-                            },
-                          ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: _InputField(
+                                label: l10n.assessmentScoreLabel,
+                                initialValue: _scores[sId]?.toString() ?? '',
+                                hint: l10n.assessmentScoreHint,
+                                keyboardType: TextInputType.number,
+                                onChanged: (val) => _scores[sId] = num.tryParse(val),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 5,
+                              child: _InputField(
+                                label: l10n.assessmentCommentLabel,
+                                initialValue: _comments[sId] ?? '',
+                                hint: l10n.assessmentCommentHintEmpty,
+                                onChanged: (val) => _comments[sId] = val.trim().isEmpty ? null : val.trim(),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-        loading: () => const AppLoadingView(),
-        error: (err, stack) => AppErrorView(
-          message: ApiErrorHandler.readableMessage(err),
-          icon: Icons.assignment_outlined,
+                  ),
+                );
+              },
+            );
+          },
+          loading: () => const AppLoadingView(),
+          error: (err, stack) => AppErrorView(
+            message: ApiErrorHandler.readableMessage(err),
+            icon: Icons.assignment_outlined,
+          ),
         ),
       ),
     );
+  }
+}
+
+class _InputField extends StatelessWidget {
+  final String label;
+  final String initialValue;
+  final String hint;
+  final TextInputType? keyboardType;
+  final ValueChanged<String> onChanged;
+
+  const _InputField({
+    required this.label,
+    required this.initialValue,
+    required this.hint,
+    this.keyboardType,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 0.5,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          initialValue: initialValue,
+          keyboardType: keyboardType,
+          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+          decoration: InputDecoration(
+            hintText: hint,
+            filled: true,
+            fillColor: Colors.white.withValues(alpha: 0.05),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+            ),
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          ),
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+}
   }
 }

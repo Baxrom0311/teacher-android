@@ -1,10 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-
 import '../../../core/constants/app_routes.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../widgets/sync_status_banner.dart';
+import 'dart:ui';
 
 class MainNavigationLayout extends ConsumerWidget {
   final Widget child;
@@ -31,71 +28,98 @@ class MainNavigationLayout extends ConsumerWidget {
     }
 
     return Scaffold(
+      extendBody: true,
       body: child,
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SyncStatusBanner(),
-          Container(
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: theme.shadowColor.withValues(alpha: 0.12),
-                  blurRadius: 10,
-                  offset: const Offset(0, -2),
+      bottomNavigationBar: SafeArea(
+        bottom: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SyncStatusBanner(),
+            Container(
+              margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: theme.brightness == Brightness.dark
+                          ? const Color(0xFF1A1C1E).withValues(alpha: 0.8)
+                          : Colors.white.withValues(alpha: 0.85),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.1),
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.15),
+                          blurRadius: 30,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: BottomNavigationBar(
+                      currentIndex: currentIndex,
+                      onTap: (index) {
+                        switch (index) {
+                          case 0: context.go(TeacherRoutes.dashboard); break;
+                          case 1: context.go(TeacherRoutes.lessons); break;
+                          case 2: context.go(TeacherRoutes.chat); break;
+                          case 3: context.go(TeacherRoutes.profile); break;
+                        }
+                      },
+                      selectedItemColor: colorScheme.primary,
+                      unselectedItemColor: colorScheme.onSurface.withValues(alpha: 0.3),
+                      showUnselectedLabels: true,
+                      type: BottomNavigationBarType.fixed,
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      iconSize: 24,
+                      selectedFontSize: 11,
+                      unselectedFontSize: 10,
+                      selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 0.2),
+                      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
+                      items: [
+                        BottomNavigationBarItem(
+                          icon: const Padding(
+                            padding: EdgeInsets.only(bottom: 4),
+                            child: Icon(Icons.grid_view_rounded),
+                          ),
+                          label: l10n.home,
+                        ),
+                        BottomNavigationBarItem(
+                          icon: const Padding(
+                            padding: EdgeInsets.only(bottom: 4),
+                            child: Icon(Icons.auto_stories_rounded),
+                          ),
+                          label: l10n.lessons,
+                        ),
+                        BottomNavigationBarItem(
+                          icon: const Padding(
+                            padding: EdgeInsets.only(bottom: 4),
+                            child: Icon(Icons.chat_bubble_rounded),
+                          ),
+                          label: l10n.chat,
+                        ),
+                        BottomNavigationBarItem(
+                          icon: const Padding(
+                            padding: EdgeInsets.only(bottom: 4),
+                            child: Icon(Icons.person_rounded),
+                          ),
+                          label: l10n.profile,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ],
+              ),
             ),
-            child: BottomNavigationBar(
-              currentIndex: currentIndex,
-              onTap: (index) {
-                switch (index) {
-                  case 0:
-                    context.go(TeacherRoutes.dashboard);
-                    break;
-                  case 1:
-                    context.go(TeacherRoutes.lessons);
-                    break;
-                  case 2:
-                    context.go(TeacherRoutes.chat);
-                    break;
-                  case 3:
-                    context.go(TeacherRoutes.profile);
-                    break;
-                }
-              },
-              selectedItemColor: colorScheme.primary,
-              unselectedItemColor: colorScheme.onSurfaceVariant,
-              showUnselectedLabels: true,
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: colorScheme.surface,
-              elevation: 0,
-              items: [
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.home_outlined),
-                  activeIcon: const Icon(Icons.home),
-                  label: l10n.home,
-                ),
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.book_outlined),
-                  activeIcon: const Icon(Icons.book),
-                  label: l10n.lessons,
-                ),
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.chat_bubble_outline),
-                  activeIcon: const Icon(Icons.chat_bubble),
-                  label: l10n.chat,
-                ),
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.person_outline),
-                  activeIcon: const Icon(Icons.person),
-                  label: l10n.profile,
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
+

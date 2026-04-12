@@ -1,12 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
-
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/liquid_glass.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../../data/models/subject_model.dart';
 import '../../providers/subject_provider.dart';
+import '../../common/page_background.dart';
+import '../../common/premium_card.dart';
+import '../../common/animated_pressable.dart';
+import '../../widgets/app_feedback.dart';
+import 'dart:ui';
 
 class SubjectDetailScreen extends ConsumerStatefulWidget {
   final int subjectId;
@@ -43,195 +45,249 @@ class _SubjectDetailScreenState extends ConsumerState<SubjectDetailScreen> {
     final colorScheme = theme.colorScheme;
     final detailAsync = ref.watch(subjectDetailProvider(widget.subjectId));
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text(widget.title),
-        backgroundColor:
-            theme.appBarTheme.backgroundColor ?? colorScheme.surface,
-        foregroundColor:
-            theme.appBarTheme.foregroundColor ?? colorScheme.onSurface,
-        elevation: 0,
-      ),
-      body: detailAsync.when(
-        data: (data) {
-          final groups = data['groups'] as List<SubjectDetail>;
+    return PageBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: detailAsync.when(
+          data: (data) {
+            final groups = data['groups'] as List<SubjectDetail>;
 
-          if (groups.isEmpty) {
-            return Center(
-              child: Text(
-                l10n.noTopicsYet,
-                style: TextStyle(color: colorScheme.onSurfaceVariant),
-              ),
+            return CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverAppBar(
+                  floating: true,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  centerTitle: true,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                  title: Text(
+                    widget.title,
+                    style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
+                  ),
+                ),
+                if (groups.isEmpty)
+                  SliverFillRemaining(
+                    child: AppEmptyView(
+                      title: l10n.noTopicsYet,
+                      icon: Icons.topic_outlined,
+                    ),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final group = groups[index];
+                          return _GroupSection(
+                            group: group,
+                            subjectId: widget.subjectId,
+                            onLaunchUrl: _launchUrl,
+                          );
+                        },
+                        childCount: groups.length,
+                      ),
+                    ),
+                  ),
+              ],
             );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: groups.length,
-            itemBuilder: (context, index) {
-              final group = groups[index];
-              return _buildGroupSection(context, group);
-            },
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) =>
-            Center(child: Text(ApiErrorHandler.readableMessage(err))),
+          },
+          loading: () => const Center(child: AppLoadingView()),
+          error: (err, stack) => Center(
+            child: AppErrorView(
+              message: ApiErrorHandler.readableMessage(err),
+              onRetry: () => ref.invalidate(subjectDetailProvider(widget.subjectId)),
+            ),
+          ),
+        ),
       ),
     );
   }
+}
 
-  Widget _buildGroupSection(BuildContext context, SubjectDetail group) {
+class _GroupSection extends StatelessWidget {
+  final SubjectDetail group;
+  final int subjectId;
+  final Function(String) onLaunchUrl;
+
+  const _GroupSection({
+    required this.group,
+    required this.subjectId,
+    required this.onLaunchUrl,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colorScheme = Theme.of(context).colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              group.groupName,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.primary,
-              ),
-            ),
-            IconButton(
-              icon: Icon(Icons.add_circle, color: colorScheme.primary),
-              tooltip: l10n.addTopicTooltip,
-              onPressed: () {
-                context.push(
-                  '/subjects/${widget.subjectId}/create-topic',
-                  extra: group,
-                );
-              },
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        if (group.topics.isEmpty)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 24.0),
-            child: Text(
-              l10n.noTopicsForGroup,
-              style: TextStyle(color: colorScheme.onSurfaceVariant),
-            ),
-          )
-        else
-          ...group.topics.map((topic) => _buildTopicCard(topic)),
-        const SizedBox(height: 16),
-        const Divider(),
-        const SizedBox(height: 16),
-      ],
-    );
-  }
-
-  Widget _buildTopicCard(TopicData topic) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.outline),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  '#${topic.orderNo ?? '-'}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.primary,
-                  ),
+              Text(
+                group.groupName,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  topic.title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: colorScheme.onSurface,
+              AnimatedPressable(
+                onTap: () => GoRouter.of(context).push(
+                  '/subjects/$subjectId/create-topic',
+                  extra: group,
+                ),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: colorScheme.primary.withValues(alpha: 0.2)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.add_rounded, size: 18, color: colorScheme.primary),
+                      const SizedBox(width: 6),
+                      Text(
+                        l10n.addTopicTooltip,
+                        style: TextStyle(
+                          color: colorScheme.primary,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ],
           ),
-          if (topic.description != null && topic.description!.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text(
-              topic.description!,
-              style: TextStyle(color: colorScheme.onSurfaceVariant),
+        ),
+        if (group.topics.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 4),
+            child: Text(
+              l10n.noTopicsForGroup,
+              style: TextStyle(
+                color: colorScheme.onSurface.withValues(alpha: 0.4),
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ],
+          )
+        else
+          ...group.topics.map((topic) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _TopicItem(topic: topic, onLaunchUrl: onLaunchUrl),
+              )),
+        const SizedBox(height: 16),
+        Divider(color: Colors.white.withValues(alpha: 0.05), thickness: 1),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+}
+
+class _TopicItem extends StatelessWidget {
+  final TopicData topic;
+  final Function(String) onLaunchUrl;
+  const _TopicItem({required this.topic, required this.onLaunchUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return PremiumCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  '#${topic.orderNo ?? '-'}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    color: colorScheme.primary,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      topic.title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 17,
+                      ),
+                    ),
+                    if (topic.description?.isNotEmpty ?? false) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        topic.description!,
+                        style: TextStyle(
+                          color: colorScheme.onSurface.withValues(alpha: 0.5),
+                          fontSize: 14,
+                          height: 1.4,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
           if (topic.resources.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Text(
-              l10n.filesTitle,
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.03),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.attachment_rounded, size: 14, color: colorScheme.onSurface.withValues(alpha: 0.3)),
+                  const SizedBox(width: 6),
+                  Text(
+                    l10n.filesTitle.toUpperCase(),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 10,
+                      letterSpacing: 0.5,
+                      color: colorScheme.onSurface.withValues(alpha: 0.4),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: topic.resources
-                  .map(
-                    (res) => InkWell(
-                      onTap: () => _launchUrl(res.url),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surface,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: colorScheme.outline),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.download,
-                              size: 14,
-                              color: colorScheme.primary,
-                            ),
-                            const SizedBox(width: 4),
-                            Flexible(
-                              child: Text(
-                                res.title,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: colorScheme.primary,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
+              children: topic.resources.map((res) => _ResourceChip(res: res, onTap: () => onLaunchUrl(res.url))).toList(),
             ),
           ],
         ],
@@ -239,3 +295,45 @@ class _SubjectDetailScreenState extends ConsumerState<SubjectDetailScreen> {
     );
   }
 }
+
+class _ResourceChip extends StatelessWidget {
+  final SubjectResource res;
+  final VoidCallback onTap;
+  const _ResourceChip({required this.res, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return AnimatedPressable(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: colorScheme.primary.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: colorScheme.primary.withValues(alpha: 0.1)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.file_open_rounded, size: 16, color: colorScheme.primary),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                res.title,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: colorScheme.primary,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

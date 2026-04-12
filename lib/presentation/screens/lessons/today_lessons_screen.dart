@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/liquid_glass.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
+import '../../../core/localization/app_localizations_registry.dart';
 import '../../providers/lesson_provider.dart';
+import '../../../data/repositories/lesson_repository.dart';
 import '../../../data/models/lesson_model.dart';
 import '../../widgets/app_feedback.dart';
+import '../../common/page_background.dart';
+import '../../common/premium_card.dart';
+import '../../common/animated_pressable.dart';
 
 class TodayLessonsScreen extends ConsumerStatefulWidget {
   const TodayLessonsScreen({super.key});
@@ -53,56 +58,59 @@ class _TodayLessonsScreenState extends ConsumerState<TodayLessonsScreen> {
     final colorScheme = theme.colorScheme;
     final lessonsAsync = ref.watch(todayLessonsProvider);
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text(l10n.todayLessonsTitle),
-        backgroundColor:
-            theme.appBarTheme.backgroundColor ?? colorScheme.surface,
-        foregroundColor:
-            theme.appBarTheme.foregroundColor ?? colorScheme.onSurface,
-        elevation: 0,
-      ),
-      body: lessonsAsync.when(
-        data: (data) {
-          if (data.entries.isEmpty) {
-            return AppEmptyView(
-              title: l10n.noLessonsTodayTitle,
-              message: l10n.noLessonsTodayMessage,
-              icon: Icons.celebration_outlined,
-            );
-          }
-
-          return Stack(
+    return PageBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: true,
+          title: Column(
             children: [
-              ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: data.entries.length,
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final entry = data.entries[index];
-                  final isCurrent = data.currentEntryId == entry.id;
-
-                  return _buildLessonCard(entry, data.quarterId, isCurrent);
-                },
+              Text(l10n.todayLessonsTitle, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+              Text(
+                DateFormat('EEEE, d MMMM').format(DateTime.now()),
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colorScheme.onSurface.withValues(alpha: 0.4)),
               ),
-              if (_isStartingLesson)
-                Container(
-                  color: theme.shadowColor.withValues(alpha: 0.18),
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
             ],
-          );
-        },
-        loading: () => AppLoadingView(
-          title: l10n.lessonsLoadingTitle,
-          subtitle: l10n.lessonsLoadingSubtitle,
+          ),
         ),
-        error: (err, stack) => AppErrorView(
-          title: l10n.lessonsLoadErrorTitle,
-          message: ApiErrorHandler.readableMessage(err),
-          onRetry: () => ref.invalidate(todayLessonsProvider),
+        body: lessonsAsync.when(
+          data: (data) {
+            if (data.entries.isEmpty) {
+              return AppEmptyView(
+                title: l10n.noLessonsTodayTitle,
+                message: l10n.noLessonsTodayMessage,
+                icon: Icons.celebration_rounded,
+              );
+            }
+
+            return Stack(
+              children: [
+                ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 120),
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: data.entries.length,
+                  itemBuilder: (context, index) {
+                    final entry = data.entries[index];
+                    final isCurrent = data.currentEntryId == entry.id;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _buildLessonCard(entry, data.quarterId, isCurrent),
+                    );
+                  },
+                ),
+                if (_isStartingLesson)
+                  const AppLoadingView(),
+              ],
+            );
+          },
+          loading: () => const AppLoadingView(),
+          error: (err, stack) => AppErrorView(
+            message: ApiErrorHandler.readableMessage(err),
+            icon: Icons.event_busy_rounded,
+            onRetry: () => ref.invalidate(todayLessonsProvider),
+          ),
         ),
       ),
     );
@@ -112,113 +120,179 @@ class _TodayLessonsScreenState extends ConsumerState<TodayLessonsScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: isCurrent ? colorScheme.primary : colorScheme.outline,
-          width: isCurrent ? 2 : 1,
-        ),
-      ),
-      color: isCurrent
-          ? colorScheme.primary.withValues(alpha: 0.05)
-          : theme.cardColor,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: TeacherAppColors.info.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    AppLocalizationsRegistry.instance.lessonOrderLabel(
-                      entry.orderNumber,
-                    ),
-                    style: const TextStyle(
-                      color: TeacherAppColors.info,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Text(
-                  '${entry.startTime.substring(0, 5)} - ${entry.endTime.substring(0, 5)}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              entry.subjectName,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Icon(
-                  Icons.people_outline,
-                  size: 16,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  entry.groupName,
-                  style: TextStyle(color: colorScheme.onSurfaceVariant),
-                ),
-                const SizedBox(width: 16),
-                Icon(
-                  Icons.room_outlined,
-                  size: 16,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  entry.room,
-                  style: TextStyle(color: colorScheme.onSurfaceVariant),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => _startLesson(entry, quarterId),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isCurrent
-                      ? colorScheme.primary
-                      : colorScheme.surface,
-                  foregroundColor: isCurrent
-                      ? colorScheme.onPrimary
-                      : colorScheme.onSurface,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+    return PremiumCard(
+      padding: const EdgeInsets.all(20),
+      border: isCurrent
+          ? Border.all(color: colorScheme.primary.withValues(alpha: 0.5), width: 2)
+          : null,
+      color: isCurrent ? colorScheme.primary.withValues(alpha: 0.05) : null,
+      shadowColor: isCurrent ? colorScheme.primary.withValues(alpha: 0.2) : null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: (isCurrent ? colorScheme.primary : Colors.white).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: (isCurrent ? colorScheme.primary : Colors.white).withValues(alpha: 0.1)),
                 ),
                 child: Text(
-                  AppLocalizationsRegistry.instance.startLessonButton,
+                  '#${entry.orderNumber}',
                   style: TextStyle(
-                    fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                    color: isCurrent ? colorScheme.primary : colorScheme.onSurface.withValues(alpha: 0.6),
+                    fontWeight: FontWeight.w900,
+                    fontSize: 11,
+                    letterSpacing: 0.5,
                   ),
                 ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                '${entry.startTime.substring(0, 5)} - ${entry.endTime.substring(0, 5)}',
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 14,
+                  color: colorScheme.onSurface.withValues(alpha: 0.4),
+                ),
+              ),
+              const Spacer(),
+              if (isCurrent)
+                _LivePulse(),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Text(
+            entry.subjectName,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.5,
+              height: 1.1,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              _InfoTag(icon: Icons.people_outline_rounded, label: entry.groupName),
+              const SizedBox(width: 12),
+              _InfoTag(icon: Icons.room_rounded, label: entry.room),
+            ],
+          ),
+          const SizedBox(height: 24),
+          AnimatedPressable(
+            onTap: () => _startLesson(entry, quarterId),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                gradient: isCurrent
+                    ? LinearGradient(
+                        colors: [colorScheme.primary, colorScheme.secondary],
+                      )
+                    : null,
+                color: isCurrent ? null : colorScheme.onSurface.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: isCurrent
+                    ? [
+                        BoxShadow(
+                          color: colorScheme.primary.withValues(alpha: 0.3),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        )
+                      ]
+                    : null,
+              ),
+              child: Text(
+                AppLocalizationsRegistry.instance.startLessonButton,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isCurrent ? Colors.white : colorScheme.onSurface,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoTag extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  const _InfoTag({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: colorScheme.onSurface.withValues(alpha: 0.4)),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colorScheme.onSurface.withValues(alpha: 0.7)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LivePulse extends StatefulWidget {
+  @override
+  State<_LivePulse> createState() => _LivePulseState();
+}
+
+class _LivePulseState extends State<_LivePulse> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _controller.drive(CurveTween(curve: Curves.easeInOut)),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: TeacherAppColors.error.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: const Row(
+          children: [
+            CircleAvatar(radius: 3, backgroundColor: TeacherAppColors.error),
+            SizedBox(width: 6),
+            Text(
+              'LIVE',
+              style: TextStyle(
+                color: TeacherAppColors.error,
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
               ),
             ),
           ],
@@ -226,4 +300,3 @@ class _TodayLessonsScreenState extends ConsumerState<TodayLessonsScreen> {
       ),
     );
   }
-}

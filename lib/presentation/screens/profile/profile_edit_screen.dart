@@ -6,10 +6,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/liquid_glass.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../../data/models/profile_model.dart';
 import '../../providers/profile_provider.dart';
+import '../../common/page_background.dart';
+import '../../common/premium_card.dart';
+import '../../common/animated_pressable.dart';
+import '../../widgets/app_feedback.dart';
 
 class ProfileEditScreen extends ConsumerStatefulWidget {
   final ProfileResponse currentProfile;
@@ -153,128 +158,110 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       profileImage = NetworkImage(currentProfile!.photoUrl!);
     }
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text(l10n.profileEditTitle),
-        backgroundColor:
-            theme.appBarTheme.backgroundColor ?? colorScheme.surface,
-        foregroundColor:
-            theme.appBarTheme.foregroundColor ?? colorScheme.onSurface,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: isLoading ? null : _submit,
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+    return PageBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(l10n.profileEditTitle, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: true,
+          actions: [
+            if (isLoading)
+              const SizedBox(width: 48, child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))))
+            else
+              IconButton(
+                icon: const Icon(Icons.check_rounded, color: Colors.white, size: 28),
+                onPressed: _submit,
+              ),
+            const SizedBox(width: 8),
+          ],
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
+          physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
-            GestureDetector(
-              onTap: _pickPhoto,
-              child: Stack(
-                alignment: Alignment.bottomRight,
+            Center(
+              child: AnimatedPressable(
+                onTap: _pickPhoto,
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    Container(
+                      width: 110,
+                      height: 110,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 4),
+                        image: profileImage != null ? DecorationImage(image: profileImage, fit: BoxFit.cover) : null,
+                      ),
+                      child: profileImage == null
+                          ? Icon(Icons.person_rounded, size: 50, color: Colors.white.withValues(alpha: 0.3))
+                          : null,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      child: const Icon(Icons.camera_alt_rounded, size: 16, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+            PremiumCard(
+              padding: const EdgeInsets.all(20),
+              child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: colorScheme.outline,
-                    backgroundImage: profileImage,
-                    child:
-                        _photoPath == null && currentProfile?.photoUrl == null
-                        ? Icon(
-                            Icons.person,
-                            size: 50,
-                            color: colorScheme.onSurfaceVariant,
-                          )
-                        : null,
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.camera_alt,
-                      size: 16,
-                      color: Colors.white,
-                    ),
-                  ),
+                  _buildTextField(l10n.universityLabel, _universityController, Icons.school_rounded),
+                  const SizedBox(height: 20),
+                  _buildTextField(l10n.specializationLabel, _specializationController, Icons.work_rounded),
+                  const SizedBox(height: 20),
+                  _buildTextField(l10n.categoryLabel, _categoryController, Icons.workspace_premium_rounded),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
-            _buildTextField(
-              l10n.universityLabel,
-              _universityController,
-              Icons.school,
-            ),
             const SizedBox(height: 16),
-            _buildTextField(
-              l10n.specializationLabel,
-              _specializationController,
-              Icons.work,
-            ),
-            const SizedBox(height: 16),
-            _buildTextField(
-              l10n.categoryLabel,
-              _categoryController,
-              Icons.workspace_premium_outlined,
-            ),
-            const SizedBox(height: 16),
-            GestureDetector(
-              onTap: _pickGraduationDate,
-              child: AbsorbPointer(
-                child: TextField(
-                  controller: TextEditingController(
-                    text: _graduationDate ?? '',
+            PremiumCard(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: _pickGraduationDate,
+                    child: AbsorbPointer(
+                      child: _buildTextField(l10n.graduationDateLabel, TextEditingController(text: _graduationDate ?? ''), Icons.calendar_today_rounded),
+                    ),
                   ),
-                  decoration: InputDecoration(
-                    labelText: l10n.graduationDateLabel,
-                    prefixIcon: const Icon(Icons.calendar_today_outlined),
-                    hintText: l10n.dateInputHint,
+                  const SizedBox(height: 20),
+                  DropdownButtonFormField<String>(
+                    value: _gender,
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: Colors.white),
+                    dropdownColor: const Color(0xFF1F2225),
+                    decoration: InputDecoration(
+                      labelText: l10n.genderLabel,
+                      labelStyle: TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.5), fontWeight: FontWeight.w600),
+                      prefixIcon: Icon(Icons.badge_rounded, color: colorScheme.primary.withValues(alpha: 0.7)),
+                      filled: true,
+                      fillColor: Colors.white.withValues(alpha: 0.05),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                    ),
+                    items: [
+                      DropdownMenuItem(value: 'male', child: Text(l10n.genderLabelText('male'))),
+                      DropdownMenuItem(value: 'female', child: Text(l10n.genderLabelText('female'))),
+                    ],
+                    onChanged: (value) => setState(() => _gender = value),
                   ),
-                ),
+                  const SizedBox(height: 20),
+                  _buildTextField(l10n.addressLabel, _addressController, Icons.location_on_rounded),
+                  const SizedBox(height: 20),
+                  _buildTextField(l10n.achievementsLabel, _achievementsController, Icons.emoji_events_rounded, maxLines: 3),
+                ],
               ),
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              initialValue: _gender,
-              decoration: InputDecoration(
-                labelText: l10n.genderLabel,
-                prefixIcon: const Icon(Icons.badge_outlined),
-              ),
-              items: [
-                DropdownMenuItem<String>(
-                  value: 'male',
-                  child: Text(l10n.genderLabelText('male')),
-                ),
-                DropdownMenuItem<String>(
-                  value: 'female',
-                  child: Text(l10n.genderLabelText('female')),
-                ),
-              ],
-              onChanged: (value) {
-                setState(() {
-                  _gender = value;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            _buildTextField(
-              l10n.addressLabel,
-              _addressController,
-              Icons.location_on,
-            ),
-            const SizedBox(height: 16),
-            _buildTextField(
-              l10n.achievementsLabel,
-              _achievementsController,
-              Icons.emoji_events,
-              maxLines: 3,
             ),
             const SizedBox(height: 24),
             _buildUploadCard(
@@ -314,75 +301,60 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     );
   }
 
-  Widget _buildTextField(
-    String label,
-    TextEditingController controller,
-    IconData icon, {
-    int maxLines = 1,
-  }) {
-    final theme = Theme.of(context);
+  Widget _buildTextField(String label, TextEditingController controller, IconData icon, {int maxLines = 1}) {
+    final colorScheme = Theme.of(context).colorScheme;
     return TextField(
       controller: controller,
       maxLines: maxLines,
-      decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
-      style: TextStyle(color: theme.colorScheme.onSurface),
+      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.5), fontWeight: FontWeight.w600),
+        prefixIcon: Icon(icon, color: colorScheme.primary.withValues(alpha: 0.7)),
+        filled: true,
+        fillColor: Colors.white.withValues(alpha: 0.05),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
     );
   }
 
-  Widget _buildUploadCard({
-    required String title,
-    required IconData icon,
-    required VoidCallback onPick,
-    required VoidCallback? onClear,
-    String? currentFileLabel,
-    String? fallbackLabel,
-  }) {
+  Widget _buildUploadCard({required String title, required IconData icon, required VoidCallback onPick, required VoidCallback? onClear, String? currentFileLabel, String? fallbackLabel}) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.outline),
-      ),
+    return PremiumCard(
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, color: colorScheme.primary),
-              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(color: colorScheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+                child: Icon(icon, color: colorScheme.primary, size: 20),
+              ),
+              const SizedBox(width: 14),
               Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: colorScheme.onSurface,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15)),
+                    const SizedBox(height: 2),
+                    Text(
+                      currentFileLabel ?? fallbackLabel ?? l10n.documentNotSelected,
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: colorScheme.onSurface.withValues(alpha: 0.4)),
+                    ),
+                  ],
                 ),
               ),
-              TextButton.icon(
-                onPressed: onPick,
-                icon: const Icon(Icons.upload_file_outlined),
-                label: Text(l10n.selectAction),
-              ),
+              if (onClear != null)
+                IconButton(onPressed: onClear, icon: const Icon(Icons.close_rounded, size: 20))
+              else
+                IconButton(onPressed: onPick, icon: const Icon(Icons.file_upload_outlined, size: 20, color: Colors.white)),
             ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            currentFileLabel ?? fallbackLabel ?? l10n.documentNotSelected,
-            style: TextStyle(color: colorScheme.onSurfaceVariant),
-          ),
-          if (onClear != null) ...[
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(onPressed: onClear, child: Text(l10n.cancel)),
-            ),
-          ],
         ],
       ),
     );

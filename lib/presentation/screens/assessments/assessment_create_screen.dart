@@ -1,12 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
-
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/liquid_glass.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../providers/assessment_provider.dart';
+import '../../common/page_background.dart';
+import '../../common/premium_card.dart';
+import '../../common/animated_pressable.dart';
 import '../../widgets/app_feedback.dart';
 
 class AssessmentCreateScreen extends ConsumerStatefulWidget {
@@ -98,255 +97,306 @@ class _AssessmentCreateScreenState
     final state = ref.watch(assessmentControllerProvider);
     final isLoading = state.isLoading;
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text(l10n.assessmentCreateTitle),
-        backgroundColor:
-            theme.appBarTheme.backgroundColor ?? colorScheme.surface,
-        foregroundColor:
-            theme.appBarTheme.foregroundColor ?? colorScheme.onSurface,
-        elevation: 0,
-      ),
-      body: optionsAsync.when(
-        data: (options) {
-          final groups = options['groups'] as List;
-          final subjects = options['subjects'] as List;
-          final quarters = options['quarters'] as List;
+    return PageBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(l10n.assessmentCreateTitle, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded),
+            onPressed: () => context.pop(),
+          ),
+        ),
+        body: optionsAsync.when(
+          data: (options) {
+            final groups = options['groups'] as List;
+            final subjects = options['subjects'] as List;
+            final quarters = options['quarters'] as List;
 
-          if (_selectedQuarterId == null && quarters.isNotEmpty) {
-            _selectedQuarterId =
-                options['currentQuarterId'] ?? quarters.first.id;
-          }
-          if (_selectedGroupId == null && groups.isNotEmpty) {
-            _selectedGroupId = groups.first.id;
-          }
-          if (_selectedSubjectId == null && subjects.isNotEmpty) {
-            _selectedSubjectId = subjects.first.id;
-          }
+            if (_selectedQuarterId == null && quarters.isNotEmpty) {
+              _selectedQuarterId = options['currentQuarterId'] ?? quarters.first.id;
+            }
+            if (_selectedGroupId == null && groups.isNotEmpty) {
+              _selectedGroupId = groups.first.id;
+            }
+            if (_selectedSubjectId == null && subjects.isNotEmpty) {
+              _selectedSubjectId = subjects.first.id;
+            }
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.assessmentQuarterLabel,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
+            return SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _FormSection(
+                    title: l10n.assessmentClassificationTitle ?? 'Tasniflash',
+                    children: [
+                      _FormLabel(label: l10n.assessmentQuarterLabel),
+                      _buildDropdown<int>(
+                        value: _selectedQuarterId,
+                        items: quarters.map((e) => DropdownMenuItem(value: e.id, child: Text(e.name))).toList(),
+                        onChanged: (val) => setState(() => _selectedQuarterId = val),
+                      ),
+                      const SizedBox(height: 16),
+                      _FormLabel(label: l10n.assessmentGroupLabel),
+                      _buildDropdown<int>(
+                        value: _selectedGroupId,
+                        items: groups.map((e) => DropdownMenuItem(value: e.id, child: Text(e.name))).toList(),
+                        onChanged: (val) => setState(() => _selectedGroupId = val),
+                      ),
+                      const SizedBox(height: 16),
+                      _FormLabel(label: l10n.assessmentSubjectLabel),
+                      _buildDropdown<int>(
+                        value: _selectedSubjectId,
+                        items: subjects.map((e) => DropdownMenuItem(value: e.id, child: Text(e.name))).toList(),
+                        onChanged: (val) => setState(() => _selectedSubjectId = val),
+                      ),
+                    ],
                   ),
-                ),
-                DropdownButtonFormField<int>(
-                  initialValue: _selectedQuarterId,
-                  decoration: const InputDecoration(),
-                  items: quarters
-                      .map(
-                        (e) => DropdownMenuItem<int>(
-                          value: e.id,
-                          child: Text(e.name),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (val) => setState(() => _selectedQuarterId = val),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.assessmentGroupLabel,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-                DropdownButtonFormField<int>(
-                  initialValue: _selectedGroupId,
-                  decoration: const InputDecoration(),
-                  items: groups
-                      .map(
-                        (e) => DropdownMenuItem<int>(
-                          value: e.id,
-                          child: Text(e.name),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (val) => setState(() => _selectedGroupId = val),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.assessmentSubjectLabel,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-                DropdownButtonFormField<int>(
-                  initialValue: _selectedSubjectId,
-                  decoration: const InputDecoration(),
-                  items: subjects
-                      .map(
-                        (e) => DropdownMenuItem<int>(
-                          value: e.id,
-                          child: Text(e.name),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (val) => setState(() => _selectedSubjectId = val),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.assessmentTypeFieldLabel,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-                DropdownButtonFormField<String>(
-                  initialValue: _selectedType,
-                  decoration: const InputDecoration(),
-                  items: _types
-                      .map(
-                        (e) => DropdownMenuItem<String>(
-                          value: e,
-                          child: Text(l10n.assessmentTypeLabelText(e)),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (val) => setState(() => _selectedType = val!),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.assessmentOptionalTitleLabel,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-                TextField(
-                  controller: _titleController,
-                  decoration: InputDecoration(
-                    hintText: l10n.assessmentOptionalTitleHint,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: 24),
+                  _FormSection(
+                    title: l10n.assessmentDetailsTitle ?? 'Tafsilotlar',
+                    children: [
+                      _FormLabel(label: l10n.assessmentTypeFieldLabel),
+                      _buildDropdown<String>(
+                        value: _selectedType,
+                        items: _types.map((e) => DropdownMenuItem(value: e, child: Text(l10n.assessmentTypeLabelText(e)))).toList(),
+                        onChanged: (val) => setState(() => _selectedType = val!),
+                      ),
+                      const SizedBox(height: 16),
+                      _FormLabel(label: l10n.assessmentOptionalTitleLabel),
+                      _buildTextField(
+                        controller: _titleController,
+                        hint: l10n.assessmentOptionalTitleHint,
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
                         children: [
-                          Text(
-                            l10n.assessmentMaxScoreLabel,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.onSurface,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _FormLabel(label: l10n.assessmentMaxScoreLabel),
+                                _buildTextField(
+                                  controller: _maxScoreController,
+                                  keyboardType: TextInputType.number,
+                                ),
+                              ],
                             ),
                           ),
-                          TextField(
-                            controller: _maxScoreController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _FormLabel(label: l10n.assessmentWeightLabel),
+                                _buildTextField(
+                                  controller: _weightController,
+                                  keyboardType: TextInputType.number,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.assessmentWeightLabel,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.onSurface,
-                            ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  _FormSection(
+                    title: l10n.assessmentDateLabel,
+                    children: [
+                      AnimatedPressable(
+                        onTap: () async {
+                          final date = await showDatePicker(
+                            context: context,
+                            initialDate: _heldAt ?? DateTime.now(),
+                            firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                            lastDate: DateTime.now().add(const Duration(days: 365)),
+                          );
+                          if (date != null) setState(() => _heldAt = date);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(18),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.05),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                           ),
-                          TextField(
-                            controller: _weightController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(),
+                          child: Row(
+                            children: [
+                              Icon(Icons.calendar_today_rounded, size: 20, color: colorScheme.primary),
+                              const SizedBox(width: 12),
+                              Text(
+                                _heldAt != null
+                                    ? DateFormat('dd.MM.yyyy', l10n.intlLocaleTag).format(_heldAt!)
+                                    : l10n.assessmentSelectDate,
+                                style: const TextStyle(fontWeight: FontWeight.w700),
+                              ),
+                              const Spacer(),
+                              Icon(Icons.edit_rounded, size: 16, color: colorScheme.primary.withValues(alpha: 0.5)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 48),
+                  AnimatedPressable(
+                    onTap: isLoading ? null : _submit,
+                    child: Container(
+                      width: double.infinity,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [colorScheme.primary, colorScheme.secondary],
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: colorScheme.primary.withValues(alpha: 0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.assessmentDateLabel,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-                InkWell(
-                  onTap: () async {
-                    final date = await showDatePicker(
-                      context: context,
-                      initialDate: _heldAt ?? DateTime.now(),
-                      locale: Locale(l10n.appLocale.name),
-                      firstDate: DateTime.now().subtract(
-                        const Duration(days: 365),
+                      child: Center(
+                        child: isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                              )
+                            : Text(
+                                l10n.saveAction.toUpperCase(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
                       ),
-                      lastDate: DateTime.now().add(const Duration(days: 365)),
-                    );
-                    if (date != null) setState(() => _heldAt = date);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: theme.cardColor,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: colorScheme.outline),
-                    ),
-                    child: Text(
-                      _heldAt != null
-                          ? DateFormat(
-                              'yyyy-MM-dd',
-                              l10n.intlLocaleTag,
-                            ).format(_heldAt!)
-                          : l10n.assessmentSelectDate,
                     ),
                   ),
-                ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: isLoading ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: colorScheme.onPrimary,
-                    ),
-                    child: isLoading
-                        ? SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              color: colorScheme.onPrimary,
-                            ),
-                          )
-                        : Text(
-                            l10n.saveAction,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-        loading: () => const AppLoadingView(),
-        error: (err, stack) => AppErrorView(
-          message: ApiErrorHandler.readableMessage(err),
-          icon: Icons.note_add_outlined,
+                ],
+              ),
+            );
+          },
+          loading: () => const AppLoadingView(),
+          error: (err, stack) => AppErrorView(
+            message: ApiErrorHandler.readableMessage(err),
+            icon: Icons.note_add_outlined,
+          ),
         ),
       ),
     );
   }
+
+  Widget _buildDropdown<T>({
+    required T? value,
+    required List<DropdownMenuItem<T>> items,
+    required ValueChanged<T?> onChanged,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<T>(
+          value: value,
+          isExpanded: true,
+          icon: const Icon(Icons.keyboard_arrow_down_rounded),
+          dropdownColor: const Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.circular(16),
+          items: items,
+          onChanged: onChanged,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    String? hint,
+    TextInputType? keyboardType,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      style: const TextStyle(fontWeight: FontWeight.w700),
+      decoration: InputDecoration(
+        hintText: hint,
+        filled: true,
+        fillColor: Colors.white.withValues(alpha: 0.05),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+        ),
+        contentPadding: const EdgeInsets.all(18),
+      ),
+    );
+  }
+}
+
+class _FormSection extends StatelessWidget {
+  final String title;
+  final List<Widget> children;
+
+  const _FormSection({required this.title, required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title.toUpperCase(),
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.2,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+          ),
+        ),
+        const SizedBox(height: 12),
+        PremiumCard(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: children,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FormLabel extends StatelessWidget {
+  final String label;
+  const _FormLabel({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8, left: 4),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+        ),
+      ),
+    );
+  }
+}
 }

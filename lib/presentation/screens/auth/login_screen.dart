@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../core/constants/app_strings.dart';
+import '../../../core/constants/liquid_glass.dart';
 import '../../../core/localization/app_locale.dart';
-import 'package:teacher_school_app/l10n/app_localizations.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../providers/app_locale_provider.dart';
 import '../../providers/app_theme_mode_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/app_feedback.dart';
+import '../../common/page_background.dart';
+import '../../common/premium_card.dart';
+import '../../common/animated_pressable.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -22,7 +24,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -32,24 +33,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _submit() async {
-    if (_isSubmitting) return;
+    final authNotifier = ref.read(authControllerProvider.notifier);
+    if (authNotifier.isLoading) return;
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isSubmitting = true);
-
-    try {
-      await ref
-          .read(authControllerProvider.notifier)
-          .login(
-            _usernameController.text.trim(),
-            _passwordController.text,
-            'Teacher Android Device',
-          );
-    } finally {
-      if (mounted) {
-        setState(() => _isSubmitting = false);
-      }
-    }
+    await authNotifier.login(
+      _usernameController.text.trim(),
+      _passwordController.text,
+      'Teacher Android Device',
+    );
   }
 
   @override
@@ -61,213 +53,111 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        PopupMenuButton<ThemeMode>(
-                          tooltip: l10n.changeTheme,
-                          initialValue: themeMode,
-                          onSelected: (value) {
-                            ref
-                                .read(appThemeModeProvider.notifier)
-                                .setThemeMode(value);
-                          },
-                          color: theme.cardColor,
-                          itemBuilder: (context) => ThemeMode.values
-                              .map(
-                                (item) => PopupMenuItem<ThemeMode>(
-                                  value: item,
-                                  child: Row(
-                                    children: [
-                                      Icon(_themeModeIcon(item), size: 18),
-                                      const SizedBox(width: 10),
-                                      Text(_themeModeLabel(item, l10n)),
-                                    ],
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                          child: _buildChip(
-                            child: Icon(
-                              _themeModeIcon(themeMode),
-                              color: colorScheme.onSurface,
-                              size: 18,
-                            ),
-                          ),
+    return PageBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _ThemeSelector(currentMode: themeMode),
+                          const SizedBox(width: 12),
+                          _LanguageSelector(currentLocale: locale),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 60),
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary.withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: colorScheme.primary.withValues(alpha: 0.3), width: 2),
                         ),
-                        const SizedBox(width: 8),
-                        PopupMenuButton<AppLocale>(
-                          tooltip: l10n.changeLanguage,
-                          initialValue: locale,
-                          onSelected: (value) {
-                            ref
-                                .read(appLocaleProvider.notifier)
-                                .setLocale(value);
-                          },
-                          itemBuilder: (context) => AppLocale.values
-                              .map(
-                                (item) => PopupMenuItem<AppLocale>(
-                                  value: item,
-                                  child: Text(item.nativeLabel),
-                                ),
-                              )
-                              .toList(),
-                          child: _buildChip(
-                            child: Text(
-                              locale.code.toUpperCase(),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: colorScheme.onSurface,
+                        child: Icon(Icons.school_rounded, size: 64, color: colorScheme.primary),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Text(
+                      l10n.teacherPortal,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -1),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.teacherSubtitle,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16, color: Colors.white.withValues(alpha: 0.6), fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 48),
+                    PremiumCard(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (authState.error != null) ...[
+                            AppInlineMessageCard(
+                              message: authState.error!,
+                              type: authState.error == AppStrings.sessionExpired ? AppInlineMessageType.info : AppInlineMessageType.error,
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                          _buildTextField(
+                            controller: _usernameController,
+                            label: l10n.usernameLabel,
+                            icon: Icons.person_rounded,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) return l10n.usernameRequired;
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          _buildTextField(
+                            controller: _passwordController,
+                            label: l10n.passwordLabel,
+                            icon: Icons.lock_rounded,
+                            isPassword: true,
+                            isObscured: _obscurePassword,
+                            onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) return AppStrings.passwordRequired;
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 32),
+                          AnimatedPressable(
+                            onTap: authState.isLoading ? null : _submit,
+                            child: Container(
+                              height: 56,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(colors: [colorScheme.primary, colorScheme.secondary]),
+                                borderRadius: BorderRadius.circular(18),
+                                boxShadow: [BoxShadow(color: colorScheme.primary.withValues(alpha: 0.3), blurRadius: 15, offset: const Offset(0, 8))],
+                              ),
+                              child: Center(
+                                child: authState.isLoading
+                                    ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 3, color: Colors.white))
+                                    : Text(l10n.signIn.toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 1.5)),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  Icon(Icons.school, size: 80, color: colorScheme.primary),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.teacherPortal,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.teacherSubtitle,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 48),
-                  if (authState.error != null) ...[
-                    AppInlineMessageCard(
-                      message: authState.error!,
-                      type: authState.error == AppStrings.sessionExpired
-                          ? AppInlineMessageType.info
-                          : AppInlineMessageType.error,
-                    ),
-                    const SizedBox(height: 16),
                   ],
-
-                  // Username Field
-                  TextFormField(
-                    controller: _usernameController,
-                    onChanged: (_) =>
-                        ref.read(authControllerProvider.notifier).clearError(),
-                    decoration: InputDecoration(
-                      labelText: l10n.usernameLabel,
-                      prefixIcon: const Icon(Icons.person_outline),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: colorScheme.surface,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return l10n.usernameRequired;
-                      }
-                      if (value.trim().length < 3) {
-                        return l10n.usernameMinimum;
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Password Field
-                  TextFormField(
-                    controller: _passwordController,
-                    onChanged: (_) =>
-                        ref.read(authControllerProvider.notifier).clearError(),
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: l10n.passwordLabel,
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: colorScheme.surface,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return AppStrings.passwordRequired;
-                      }
-                      if (value.length < 6) {
-                        return AppStrings.passwordTooShort;
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Login Button
-                  ElevatedButton(
-                    onPressed: authState.isLoading ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: authState.isLoading
-                        ? SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                colorScheme.onPrimary,
-                              ),
-                            ),
-                          )
-                        : Text(
-                            l10n.signIn,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -276,34 +166,120 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  String _themeModeLabel(ThemeMode themeMode, AppLocalizations l10n) {
-    return switch (themeMode) {
-      ThemeMode.system => l10n.themeSystem,
-      ThemeMode.light => l10n.themeLight,
-      ThemeMode.dark => l10n.themeDark,
-    };
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool isPassword = false,
+    bool isObscured = false,
+    VoidCallback? onToggleObscure,
+    String? Function(String?)? validator,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return TextFormField(
+      controller: controller,
+      obscureText: isObscured,
+      onChanged: (_) => ref.read(authControllerProvider.notifier).clearError(),
+      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.5), fontWeight: FontWeight.w600),
+        prefixIcon: Icon(icon, color: colorScheme.primary.withValues(alpha: 0.7)),
+        suffixIcon: isPassword
+            ? IconButton(
+                icon: Icon(isObscured ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 20),
+                onPressed: onToggleObscure,
+                color: colorScheme.onSurface.withValues(alpha: 0.4),
+              )
+            : null,
+        filled: true,
+        fillColor: Colors.white.withValues(alpha: 0.05),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      ),
+      validator: validator,
+    );
+  }
+}
+
+class _ThemeSelector extends ConsumerWidget {
+  final ThemeMode currentMode;
+  const _ThemeSelector({required this.currentMode});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return PopupMenuButton<ThemeMode>(
+      tooltip: l10n.changeTheme,
+      initialValue: currentMode,
+      onSelected: (value) => ref.read(appThemeModeProvider.notifier).setThemeMode(value),
+      color: const Color(0xFF1F2225),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      itemBuilder: (context) => ThemeMode.values
+          .map((item) => PopupMenuItem(
+                value: item,
+                child: Row(
+                  children: [
+                    Icon(_themeModeIcon(item), size: 18, color: colorScheme.primary),
+                    const SizedBox(width: 12),
+                    Text(_themeModeLabel(item, l10n), style: const TextStyle(fontWeight: FontWeight.w700)),
+                  ],
+                ),
+              ))
+          .toList(),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.05), shape: BoxShape.circle),
+        child: Icon(_themeModeIcon(currentMode), color: Colors.white, size: 20),
+      ),
+    );
   }
 
-  IconData _themeModeIcon(ThemeMode themeMode) {
-    return switch (themeMode) {
+  IconData _themeModeIcon(ThemeMode mode) {
+    return switch (mode) {
       ThemeMode.system => Icons.brightness_auto_rounded,
       ThemeMode.light => Icons.light_mode_rounded,
       ThemeMode.dark => Icons.dark_mode_rounded,
     };
   }
 
-  Widget _buildChip({required Widget child}) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+  String _themeModeLabel(ThemeMode mode, dynamic l10n) {
+    return switch (mode) {
+      ThemeMode.system => l10n.themeSystem,
+      ThemeMode.light => l10n.themeLight,
+      ThemeMode.dark => l10n.themeDark,
+    };
+  }
+}
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: colorScheme.outline.withValues(alpha: 0.6)),
+class _LanguageSelector extends ConsumerWidget {
+  final AppLocale currentLocale;
+  const _LanguageSelector({required this.currentLocale});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return PopupMenuButton<AppLocale>(
+      tooltip: l10n.changeLanguage,
+      initialValue: currentLocale,
+      onSelected: (value) => ref.read(appLocaleProvider.notifier).setLocale(value),
+      color: const Color(0xFF1F2225),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      itemBuilder: (context) => AppLocale.values
+          .map((item) => PopupMenuItem(
+                value: item,
+                child: Text(item.nativeLabel, style: const TextStyle(fontWeight: FontWeight.w700)),
+              ))
+          .toList(),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(20)),
+        child: Text(currentLocale.code.toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13)),
       ),
-      child: child,
     );
   }
 }
