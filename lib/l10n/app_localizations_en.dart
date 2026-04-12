@@ -1014,4 +1014,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get langEn => 'English';
+
+  @override
+  String get paymentSuccessTitle => 'To\'lov muvaffaqiyatli!';
+
+  @override
+  String get paymentSuccessMessage =>
+      'Mablag\' to\'liq qabul qilindi va tizimda aks etdi.';
+
+  @override
+  String get backToHome => 'Asosiy ekranga qaytish';
 }

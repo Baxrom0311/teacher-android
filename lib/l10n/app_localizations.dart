@@ -2085,6 +2085,24 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Inglizcha'**
   String get langEn;
+
+  /// No description provided for @paymentSuccessTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'To\'lov muvaffaqiyatli!'**
+  String get paymentSuccessTitle;
+
+  /// No description provided for @paymentSuccessMessage.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mablag\' to\'liq qabul qilindi va tizimda aks etdi.'**
+  String get paymentSuccessMessage;
+
+  /// No description provided for @backToHome.
+  ///
+  /// In uz, this message translates to:
+  /// **'Asosiy ekranga qaytish'**
+  String get backToHome;
 }
 
 class _AppLocalizationsDelegate

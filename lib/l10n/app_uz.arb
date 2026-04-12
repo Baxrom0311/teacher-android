@@ -330,5 +330,8 @@
   "mealsSavedSuccess": "Hisobot saqlandi!",
   "langUz": "O'zbekcha",
   "langRu": "Ruscha",
-  "langEn": "Inglizcha"
+  "langEn": "Inglizcha",
+  "paymentSuccessTitle": "To'lov muvaffaqiyatli!",
+  "paymentSuccessMessage": "Mablag' to'liq qabul qilindi va tizimda aks etdi.",
+  "backToHome": "Asosiy ekranga qaytish"
 }

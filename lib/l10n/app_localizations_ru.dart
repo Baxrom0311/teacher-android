@@ -1018,4 +1018,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get langEn => 'Английский';
+
+  @override
+  String get paymentSuccessTitle => 'Оплата успешна!';
+
+  @override
+  String get paymentSuccessMessage =>
+      'Платеж полностью принят и отражен в системе.';
+
+  @override
+  String get backToHome => 'Вернуться на главную';
 }

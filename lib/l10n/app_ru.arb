@@ -330,5 +330,8 @@
   "mealsSavedSuccess": "Отчет сохранен!",
   "langUz": "Узбекский",
   "langRu": "Русский",
-  "langEn": "Английский"
+  "langEn": "Английский",
+  "paymentSuccessTitle": "Оплата успешна!",
+  "paymentSuccessMessage": "Платеж полностью принят и отражен в системе.",
+  "backToHome": "Вернуться на главную"
 }

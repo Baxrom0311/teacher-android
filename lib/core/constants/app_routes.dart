@@ -44,6 +44,7 @@ class TeacherRoutes {
   static const String payments = '/payments';
   static const String paymentDetail = '/payments/:studentId';
   static String paymentDetailPath(int studentId) => '/payments/$studentId';
+  static const String paymentSuccess = '/payments/success';
   static const String library = '/library';
   static const String events = '/events';
   static const String notifications = '/notifications';

@@ -28,6 +28,7 @@ import '../../presentation/screens/lessons/today_lessons_screen.dart';
 import '../../presentation/screens/meals/meals_list_screen.dart';
 import '../../presentation/screens/notifications/notifications_screen.dart';
 import '../../presentation/screens/payments/payment_detail_screen.dart';
+import '../../presentation/screens/payments/payment_success_screen.dart';
 import '../../presentation/screens/payments/payments_screen.dart';
 import '../../presentation/screens/profile/portfolio_work_create_screen.dart';
 import '../../presentation/screens/profile/profile_edit_screen.dart';
@@ -243,6 +244,11 @@ class TeacherAppRouter {
         final id = int.parse(state.pathParameters['studentId']!);
         return PaymentDetailScreen(studentId: id);
       },
+    ),
+    GoRoute(
+      name: TeacherRoutes.paymentSuccess,
+      path: TeacherRoutes.paymentSuccess,
+      builder: (context, state) => const PaymentSuccessScreen(),
     ),
     GoRoute(
       name: TeacherRoutes.profileEdit,
