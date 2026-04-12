@@ -1,11 +1,14 @@
+import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../providers/assessment_provider.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
+import '../../widgets/common/animated_pressable.dart';
 import '../../widgets/app_feedback.dart';
 
 class AssessmentCreateScreen extends ConsumerStatefulWidget {
@@ -101,7 +104,10 @@ class _AssessmentCreateScreenState
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text(l10n.assessmentCreateTitle, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+          title: Text(
+            l10n.assessmentCreateTitle,
+            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+          ),
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
@@ -116,7 +122,8 @@ class _AssessmentCreateScreenState
             final quarters = options['quarters'] as List;
 
             if (_selectedQuarterId == null && quarters.isNotEmpty) {
-              _selectedQuarterId = options['currentQuarterId'] ?? quarters.first.id;
+              _selectedQuarterId =
+                  options['currentQuarterId'] ?? quarters.first.id;
             }
             if (_selectedGroupId == null && groups.isNotEmpty) {
               _selectedGroupId = groups.first.id;
@@ -131,39 +138,71 @@ class _AssessmentCreateScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _FormSection(
-                    title: l10n.assessmentClassificationTitle ?? 'Tasniflash',
+                    title: l10n.assessmentClassificationTitle,
                     children: [
                       _FormLabel(label: l10n.assessmentQuarterLabel),
                       _buildDropdown<int>(
                         value: _selectedQuarterId,
-                        items: quarters.map((e) => DropdownMenuItem(value: e.id, child: Text(e.name))).toList(),
-                        onChanged: (val) => setState(() => _selectedQuarterId = val),
+                        items: quarters
+                            .map<DropdownMenuItem<int>>(
+                              (e) => DropdownMenuItem<int>(
+                                value: e.id as int,
+                                child: Text(e.name.toString()),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (val) =>
+                            setState(() => _selectedQuarterId = val),
                       ),
                       const SizedBox(height: 16),
                       _FormLabel(label: l10n.assessmentGroupLabel),
                       _buildDropdown<int>(
                         value: _selectedGroupId,
-                        items: groups.map((e) => DropdownMenuItem(value: e.id, child: Text(e.name))).toList(),
-                        onChanged: (val) => setState(() => _selectedGroupId = val),
+                        items: groups
+                            .map<DropdownMenuItem<int>>(
+                              (e) => DropdownMenuItem<int>(
+                                value: e.id as int,
+                                child: Text(e.name.toString()),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (val) =>
+                            setState(() => _selectedGroupId = val),
                       ),
                       const SizedBox(height: 16),
                       _FormLabel(label: l10n.assessmentSubjectLabel),
                       _buildDropdown<int>(
                         value: _selectedSubjectId,
-                        items: subjects.map((e) => DropdownMenuItem(value: e.id, child: Text(e.name))).toList(),
-                        onChanged: (val) => setState(() => _selectedSubjectId = val),
+                        items: subjects
+                            .map<DropdownMenuItem<int>>(
+                              (e) => DropdownMenuItem<int>(
+                                value: e.id as int,
+                                child: Text(e.name.toString()),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (val) =>
+                            setState(() => _selectedSubjectId = val),
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
                   _FormSection(
-                    title: l10n.assessmentDetailsTitle ?? 'Tafsilotlar',
+                    title: l10n.assessmentDetailsTitle,
                     children: [
                       _FormLabel(label: l10n.assessmentTypeFieldLabel),
                       _buildDropdown<String>(
                         value: _selectedType,
-                        items: _types.map((e) => DropdownMenuItem(value: e, child: Text(l10n.assessmentTypeLabelText(e)))).toList(),
-                        onChanged: (val) => setState(() => _selectedType = val!),
+                        items: _types
+                            .map<DropdownMenuItem<String>>(
+                              (e) => DropdownMenuItem<String>(
+                                value: e,
+                                child: Text(l10n.assessmentTypeLabelText(e)),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (val) =>
+                            setState(() => _selectedType = val!),
                       ),
                       const SizedBox(height: 16),
                       _FormLabel(label: l10n.assessmentOptionalTitleLabel),
@@ -212,8 +251,12 @@ class _AssessmentCreateScreenState
                           final date = await showDatePicker(
                             context: context,
                             initialDate: _heldAt ?? DateTime.now(),
-                            firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                            lastDate: DateTime.now().add(const Duration(days: 365)),
+                            firstDate: DateTime.now().subtract(
+                              const Duration(days: 365),
+                            ),
+                            lastDate: DateTime.now().add(
+                              const Duration(days: 365),
+                            ),
                           );
                           if (date != null) setState(() => _heldAt = date);
                         },
@@ -222,20 +265,37 @@ class _AssessmentCreateScreenState
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.1),
+                            ),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.calendar_today_rounded, size: 20, color: colorScheme.primary),
+                              Icon(
+                                Icons.calendar_today_rounded,
+                                size: 20,
+                                color: colorScheme.primary,
+                              ),
                               const SizedBox(width: 12),
                               Text(
                                 _heldAt != null
-                                    ? DateFormat('dd.MM.yyyy', l10n.intlLocaleTag).format(_heldAt!)
+                                    ? DateFormat(
+                                        'dd.MM.yyyy',
+                                        l10n.intlLocaleTag,
+                                      ).format(_heldAt!)
                                     : l10n.assessmentSelectDate,
-                                style: const TextStyle(fontWeight: FontWeight.w700),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                               const Spacer(),
-                              Icon(Icons.edit_rounded, size: 16, color: colorScheme.primary.withValues(alpha: 0.5)),
+                              Icon(
+                                Icons.edit_rounded,
+                                size: 16,
+                                color: colorScheme.primary.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -266,7 +326,10 @@ class _AssessmentCreateScreenState
                             ? const SizedBox(
                                 width: 24,
                                 height: 24,
-                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 3,
+                                ),
                               )
                             : Text(
                                 l10n.saveAction.toUpperCase(),
@@ -364,7 +427,9 @@ class _FormSection extends StatelessWidget {
             fontSize: 12,
             fontWeight: FontWeight.w900,
             letterSpacing: 1.2,
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.4),
           ),
         ),
         const SizedBox(height: 12),
@@ -398,5 +463,4 @@ class _FormLabel extends StatelessWidget {
       ),
     );
   }
-}
 }

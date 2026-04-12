@@ -5,13 +5,13 @@ import 'package:intl/intl.dart';
 import 'dart:ui';
 
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
+import '../../../data/models/payment_model.dart';
 import '../../providers/payment_provider.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
+import '../../widgets/common/animated_pressable.dart';
 import '../../widgets/app_feedback.dart';
 
 class PaymentDetailScreen extends ConsumerStatefulWidget {
@@ -19,7 +19,8 @@ class PaymentDetailScreen extends ConsumerStatefulWidget {
   const PaymentDetailScreen({super.key, required this.studentId});
 
   @override
-  ConsumerState<PaymentDetailScreen> createState() => _PaymentDetailScreenState();
+  ConsumerState<PaymentDetailScreen> createState() =>
+      _PaymentDetailScreenState();
 }
 
 class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
@@ -56,7 +57,10 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
 
   Future<void> _submitPayment() async {
     final l10n = context.l10n;
-    final amountText = _amountController.text.trim().replaceAll(',', '').replaceAll(' ', '');
+    final amountText = _amountController.text
+        .trim()
+        .replaceAll(',', '')
+        .replaceAll(' ', '');
     final amount = num.tryParse(amountText);
 
     if (amount == null || amount <= 0) {
@@ -64,7 +68,9 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
       return;
     }
 
-    final success = await ref.read(paymentControllerProvider.notifier).storePayment(
+    final success = await ref
+        .read(paymentControllerProvider.notifier)
+        .storePayment(
           widget.studentId,
           payType: _payType,
           paymentMethod: _paymentMethod,
@@ -107,9 +113,15 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
               ),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface.withValues(alpha: 0.95),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(32),
+                ),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 20, offset: const Offset(0, -10)),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 20,
+                    offset: const Offset(0, -10),
+                  ),
                 ],
               ),
               child: BackdropFilter(
@@ -132,16 +144,25 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
                       ),
                       Text(
                         l10n.newPaymentTitle,
-                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                       const SizedBox(height: 24),
-                      
+
                       _FormLabel(label: l10n.paymentTypeLabel),
                       _DropdownField<String>(
                         value: _payType,
                         items: [
-                          DropdownMenuItem(value: 'monthly', child: Text(l10n.monthlyPaymentType)),
-                          DropdownMenuItem(value: 'yearly', child: Text(l10n.yearlyPaymentType)),
+                          DropdownMenuItem(
+                            value: 'monthly',
+                            child: Text(l10n.monthlyPaymentType),
+                          ),
+                          DropdownMenuItem(
+                            value: 'yearly',
+                            child: Text(l10n.yearlyPaymentType),
+                          ),
                         ],
                         onChanged: (v) => setStateModal(() => _payType = v!),
                       ),
@@ -157,10 +178,21 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
                                   _FormLabel(label: l10n.yearLabel),
                                   _DropdownField<int>(
                                     value: _periodYear,
-                                    items: List.generate(5, (i) => DateTime.now().year - 2 + i)
-                                        .map((y) => DropdownMenuItem(value: y, child: Text(y.toString())))
-                                        .toList(),
-                                    onChanged: (v) => setStateModal(() => _periodYear = v),
+                                    items:
+                                        List.generate(
+                                              5,
+                                              (i) =>
+                                                  DateTime.now().year - 2 + i,
+                                            )
+                                            .map(
+                                              (y) => DropdownMenuItem(
+                                                value: y,
+                                                child: Text(y.toString()),
+                                              ),
+                                            )
+                                            .toList(),
+                                    onChanged: (v) =>
+                                        setStateModal(() => _periodYear = v),
                                   ),
                                 ],
                               ),
@@ -174,9 +206,17 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
                                   _DropdownField<int>(
                                     value: _periodMonth,
                                     items: List.generate(12, (i) => i + 1)
-                                        .map((m) => DropdownMenuItem(value: m, child: Text(m.toString().padLeft(2, '0'))))
+                                        .map(
+                                          (m) => DropdownMenuItem(
+                                            value: m,
+                                            child: Text(
+                                              m.toString().padLeft(2, '0'),
+                                            ),
+                                          ),
+                                        )
                                         .toList(),
-                                    onChanged: (v) => setStateModal(() => _periodMonth = v),
+                                    onChanged: (v) =>
+                                        setStateModal(() => _periodMonth = v),
                                   ),
                                 ],
                               ),
@@ -190,12 +230,25 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
                       _DropdownField<String>(
                         value: _paymentMethod,
                         items: [
-                          DropdownMenuItem(value: 'cash', child: Text(l10n.paymentMethodCash)),
-                          DropdownMenuItem(value: 'card', child: Text(l10n.paymentMethodCard)),
-                          DropdownMenuItem(value: 'p2p', child: Text(l10n.paymentMethodTransfer)),
-                          DropdownMenuItem(value: 'terminal', child: Text(l10n.paymentMethodTerminal)),
+                          DropdownMenuItem(
+                            value: 'cash',
+                            child: Text(l10n.paymentMethodCash),
+                          ),
+                          DropdownMenuItem(
+                            value: 'card',
+                            child: Text(l10n.paymentMethodCard),
+                          ),
+                          DropdownMenuItem(
+                            value: 'p2p',
+                            child: Text(l10n.paymentMethodTransfer),
+                          ),
+                          DropdownMenuItem(
+                            value: 'terminal',
+                            child: Text(l10n.paymentMethodTerminal),
+                          ),
                         ],
-                        onChanged: (v) => setStateModal(() => _paymentMethod = v!),
+                        onChanged: (v) =>
+                            setStateModal(() => _paymentMethod = v!),
                       ),
                       const SizedBox(height: 16),
 
@@ -225,11 +278,18 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
                           width: double.infinity,
                           height: 56,
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [colorScheme.primary, colorScheme.secondary]),
+                            gradient: LinearGradient(
+                              colors: [
+                                colorScheme.primary,
+                                colorScheme.secondary,
+                              ],
+                            ),
                             borderRadius: BorderRadius.circular(18),
                             boxShadow: [
                               BoxShadow(
-                                color: colorScheme.primary.withValues(alpha: 0.3),
+                                color: colorScheme.primary.withValues(
+                                  alpha: 0.3,
+                                ),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
@@ -238,7 +298,11 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
                           child: Center(
                             child: Text(
                               l10n.confirmAction.toUpperCase(),
-                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 1.0),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.0,
+                              ),
                             ),
                           ),
                         ),
@@ -261,7 +325,9 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final detailAsync = ref.watch(studentPaymentDetailProvider(widget.studentId));
+    final detailAsync = ref.watch(
+      studentPaymentDetailProvider(widget.studentId),
+    );
 
     return PageBackground(
       child: Scaffold(
@@ -273,7 +339,9 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
             final payments = data.payments;
 
             return CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
               slivers: [
                 SliverAppBar(
                   expandedHeight: 280,
@@ -290,16 +358,25 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
                             height: 100,
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                colors: [colorScheme.primary.withValues(alpha: 0.2), colorScheme.secondary.withValues(alpha: 0.2)],
+                                colors: [
+                                  colorScheme.primary.withValues(alpha: 0.2),
+                                  colorScheme.secondary.withValues(alpha: 0.2),
+                                ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
                               borderRadius: BorderRadius.circular(32),
-                              border: Border.all(color: colorScheme.primary.withValues(alpha: 0.2)),
+                              border: Border.all(
+                                color: colorScheme.primary.withValues(
+                                  alpha: 0.2,
+                                ),
+                              ),
                             ),
                             child: Center(
                               child: Text(
-                                student['name'].toString().isNotEmpty ? student['name'][0].toUpperCase() : 'S',
+                                student['name'].toString().isNotEmpty
+                                    ? student['name'][0].toUpperCase()
+                                    : 'S',
                                 style: TextStyle(
                                   fontSize: 40,
                                   color: colorScheme.primary,
@@ -311,13 +388,19 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
                           const SizedBox(height: 16),
                           Text(
                             student['name'] ?? '',
-                            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, height: 1.2),
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w900,
+                              height: 1.2,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             group['name'] ?? '',
                             style: TextStyle(
-                              color: colorScheme.onSurface.withValues(alpha: 0.4),
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.4,
+                              ),
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
@@ -365,18 +448,28 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
                       children: [
                         Text(
                           l10n.paymentHistoryTitle,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                         if (payments.isNotEmpty)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: colorScheme.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               payments.length.toString(),
-                              style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.w900, fontSize: 12),
+                              style: TextStyle(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
                       ],
@@ -397,16 +490,16 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
                   SliverPadding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
                     sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final p = payments[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _HistoryCard(p: p, formatCurrency: formatCurrency),
-                          );
-                        },
-                        childCount: payments.length,
-                      ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final p = payments[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _HistoryCard(
+                            p: p,
+                            formatCurrency: formatCurrency,
+                          ),
+                        );
+                      }, childCount: payments.length),
                     ),
                   ),
               ],
@@ -416,7 +509,9 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
           error: (err, st) => Center(
             child: AppErrorView(
               message: ApiErrorHandler.readableMessage(err),
-              onRetry: () => ref.invalidate(studentPaymentDetailProvider(widget.studentId)),
+              onRetry: () => ref.invalidate(
+                studentPaymentDetailProvider(widget.studentId),
+              ),
             ),
           ),
         ),
@@ -426,7 +521,9 @@ class _PaymentDetailScreenState extends ConsumerState<PaymentDetailScreen> {
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [colorScheme.primary, colorScheme.secondary]),
+              gradient: LinearGradient(
+                colors: [colorScheme.primary, colorScheme.secondary],
+              ),
               borderRadius: BorderRadius.circular(22),
               boxShadow: [
                 BoxShadow(
@@ -450,7 +547,12 @@ class _SummaryCard extends StatelessWidget {
   final IconData icon;
   final Color color;
 
-  const _SummaryCard({required this.title, required this.value, required this.icon, required this.color});
+  const _SummaryCard({
+    required this.title,
+    required this.value,
+    required this.icon,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -471,7 +573,9 @@ class _SummaryCard extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.4),
               fontSize: 12,
               fontWeight: FontWeight.w700,
             ),
@@ -492,7 +596,7 @@ class _SummaryCard extends StatelessWidget {
 }
 
 class _HistoryCard extends StatelessWidget {
-  final PaymentData p;
+  final StudentPayment p;
   final NumberFormat formatCurrency;
 
   const _HistoryCard({required this.p, required this.formatCurrency});
@@ -512,7 +616,11 @@ class _HistoryCard extends StatelessWidget {
               color: TeacherAppColors.success.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.check_circle_rounded, color: TeacherAppColors.success, size: 20),
+            child: const Icon(
+              Icons.check_circle_rounded,
+              color: TeacherAppColors.success,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -521,7 +629,10 @@ class _HistoryCard extends StatelessWidget {
               children: [
                 Text(
                   formatCurrency.format(p.amount),
-                  style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 17),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 17,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -595,7 +706,9 @@ class _InputField extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.onSurface.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.onSurface.withValues(alpha: 0.08)),
+        border: Border.all(
+          color: colorScheme.onSurface.withValues(alpha: 0.08),
+        ),
       ),
       child: TextField(
         controller: controller,
@@ -603,10 +716,19 @@ class _InputField extends StatelessWidget {
         style: const TextStyle(fontWeight: FontWeight.w600),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.3)),
-          prefixIcon: Icon(prefixIcon, color: colorScheme.onSurface.withValues(alpha: 0.3), size: 20),
+          hintStyle: TextStyle(
+            color: colorScheme.onSurface.withValues(alpha: 0.3),
+          ),
+          prefixIcon: Icon(
+            prefixIcon,
+            color: colorScheme.onSurface.withValues(alpha: 0.3),
+            size: 20,
+          ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
         ),
       ),
     );
@@ -618,7 +740,11 @@ class _DropdownField<T> extends StatelessWidget {
   final List<DropdownMenuItem<T>> items;
   final ValueChanged<T?> onChanged;
 
-  const _DropdownField({required this.value, required this.items, required this.onChanged});
+  const _DropdownField({
+    required this.value,
+    required this.items,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -629,17 +755,27 @@ class _DropdownField<T> extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.onSurface.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.onSurface.withValues(alpha: 0.08)),
+        border: Border.all(
+          color: colorScheme.onSurface.withValues(alpha: 0.08),
+        ),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<T>(
           value: value,
           items: items,
           onChanged: onChanged,
-          icon: Icon(Icons.keyboard_arrow_down_rounded, color: colorScheme.primary, size: 20),
+          icon: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: colorScheme.primary,
+            size: 20,
+          ),
           dropdownColor: theme.cardColor,
           isExpanded: true,
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: colorScheme.onSurface),
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+            color: colorScheme.onSurface,
+          ),
         ),
       ),
     );

@@ -32,16 +32,26 @@ class SocketListener {
     if (authState.user == null) return;
 
     final myId = authState.user!.id;
+    final tenantId = authState.user!.tenantId;
+    if (tenantId == null || tenantId.isEmpty) {
+      log(
+        'WebSocket (Teacher): tenant_id is missing, chat subscription skipped',
+      );
+      return;
+    }
 
     // 1. Chat xabarlari uchun kanal (Private)
-    final chatChannel = 'chat.$myId';
+    final chatChannel = 'tenant.$tenantId.user.$myId';
     log('WebSocket (Teacher): Subscribing to $chatChannel');
 
-    socket.listenPrivate(chatChannel, 'ChatMessageSent', (data) {
+    socket.listenPrivate(chatChannel, 'chat.message', (data) {
       log('WebSocket: New chat message received');
 
       // Xabar yuborgan foydalanuvchi ID si
-      final senderId = data['message']?['sender_id'];
+      final senderIdRaw = data['sender_id'];
+      final senderId = senderIdRaw is num
+          ? senderIdRaw.toInt()
+          : int.tryParse('$senderIdRaw');
 
       if (senderId != null) {
         // Chat kontaktlarini yangilash

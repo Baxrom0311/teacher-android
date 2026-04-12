@@ -4,16 +4,14 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
 import '../../../core/constants/api_constants.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../providers/meal_provider.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
+import '../../widgets/common/animated_pressable.dart';
 import '../../widgets/app_feedback.dart';
-import 'dart:ui';
 
 class MealsListScreen extends ConsumerStatefulWidget {
   const MealsListScreen({super.key});
@@ -58,7 +56,9 @@ class _MealsListScreenState extends ConsumerState<MealsListScreen> {
       return;
     }
 
-    final success = await ref.read(mealControllerProvider.notifier).storeMeal(
+    final success = await ref
+        .read(mealControllerProvider.notifier)
+        .storeMeal(
           groupId: groupId,
           mealType: mealType,
           mealName: mealName,
@@ -91,7 +91,10 @@ class _MealsListScreenState extends ConsumerState<MealsListScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text(l10n.mealsReportTitle, style: const TextStyle(fontWeight: FontWeight.w900)),
+          title: Text(
+            l10n.mealsReportTitle,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
@@ -110,10 +113,12 @@ class _MealsListScreenState extends ConsumerState<MealsListScreen> {
             }
 
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (_mealNameController.text.isEmpty && data.selectedName != null) {
+              if (_mealNameController.text.isEmpty &&
+                  data.selectedName != null) {
                 _mealNameController.text = data.selectedName!;
               }
-              if (_recipeController.text.isEmpty && data.selectedRecipe != null) {
+              if (_recipeController.text.isEmpty &&
+                  data.selectedRecipe != null) {
                 _recipeController.text = data.selectedRecipe!;
               }
             });
@@ -124,11 +129,11 @@ class _MealsListScreenState extends ConsumerState<MealsListScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   _SectionTitle(title: l10n.mealsDateLabel(data.today)),
-                   const SizedBox(height: 8),
+                  _SectionTitle(title: l10n.mealsDateLabel(data.today)),
+                  const SizedBox(height: 8),
                   _buildSelectors(data, colorScheme),
                   const SizedBox(height: 24),
-                  
+
                   _SectionTitle(title: l10n.mealsNameLabel),
                   _InputField(
                     controller: _mealNameController,
@@ -151,14 +156,21 @@ class _MealsListScreenState extends ConsumerState<MealsListScreen> {
                       AnimatedPressable(
                         onTap: _pickImages,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: colorScheme.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.add_a_photo_rounded, size: 18, color: colorScheme.primary),
+                              Icon(
+                                Icons.add_a_photo_rounded,
+                                size: 18,
+                                color: colorScheme.primary,
+                              ),
                               const SizedBox(width: 6),
                               Text(
                                 l10n.mealsAddImageAction,
@@ -193,9 +205,15 @@ class _MealsListScreenState extends ConsumerState<MealsListScreen> {
                                   height: 90,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                                    border: Border.all(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                    ),
                                     image: DecorationImage(
-                                      image: FileImage(File(_selectedFiles[index].path)),
+                                      image: FileImage(
+                                        File(_selectedFiles[index].path),
+                                      ),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -211,7 +229,11 @@ class _MealsListScreenState extends ConsumerState<MealsListScreen> {
                                         shape: BoxShape.circle,
                                       ),
                                       padding: const EdgeInsets.all(4),
-                                      child: const Icon(Icons.close_rounded, color: Colors.white, size: 16),
+                                      child: const Icon(
+                                        Icons.close_rounded,
+                                        color: Colors.white,
+                                        size: 16,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -234,7 +256,8 @@ class _MealsListScreenState extends ConsumerState<MealsListScreen> {
                         physics: const BouncingScrollPhysics(),
                         itemCount: data.mediaByType[data.selectedType]!.length,
                         itemBuilder: (context, index) {
-                          final media = data.mediaByType[data.selectedType]![index];
+                          final media =
+                              data.mediaByType[data.selectedType]![index];
                           return Padding(
                             padding: const EdgeInsets.only(right: 12),
                             child: PremiumCard(
@@ -318,12 +341,19 @@ class _MealsListScreenState extends ConsumerState<MealsListScreen> {
           child: _DropdownField<int>(
             value: data.groupId,
             label: l10n.mealsGroupLabel,
-            items: (data.groups as List).map((g) => DropdownMenuItem<int>(value: g.id, child: Text(g.name))).toList(),
+            items: (data.groups as List)
+                .map(
+                  (g) =>
+                      DropdownMenuItem<int>(value: g.id, child: Text(g.name)),
+                )
+                .toList(),
             onChanged: (v) {
               if (v == null) return;
               _mealNameController.clear();
               _recipeController.clear();
-              ref.read(mealIndexParamsProvider.notifier).update((state) => {...state, 'group_id': v});
+              ref
+                  .read(mealIndexParamsProvider.notifier)
+                  .update((state) => {...state, 'group_id': v});
             },
           ),
         ),
@@ -333,15 +363,21 @@ class _MealsListScreenState extends ConsumerState<MealsListScreen> {
           child: _DropdownField<String>(
             value: data.selectedType,
             label: l10n.mealsTimeLabel,
-            items: (data.mealTypes as List).map((m) => DropdownMenuItem<String>(
-                  value: m.toString(),
-                  child: Text(l10n.mealTypeLabel(m.toString())),
-                )).toList(),
+            items: (data.mealTypes as List)
+                .map(
+                  (m) => DropdownMenuItem<String>(
+                    value: m.toString(),
+                    child: Text(l10n.mealTypeLabel(m.toString())),
+                  ),
+                )
+                .toList(),
             onChanged: (v) {
               if (v == null) return;
               _mealNameController.clear();
               _recipeController.clear();
-              ref.read(mealIndexParamsProvider.notifier).update((state) => {...state, 'meal_type': v});
+              ref
+                  .read(mealIndexParamsProvider.notifier)
+                  .update((state) => {...state, 'meal_type': v});
             },
           ),
         ),
@@ -376,7 +412,11 @@ class _InputField extends StatelessWidget {
   final String hintText;
   final int maxLines;
 
-  const _InputField({required this.controller, required this.hintText, this.maxLines = 1});
+  const _InputField({
+    required this.controller,
+    required this.hintText,
+    this.maxLines = 1,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -394,7 +434,10 @@ class _InputField extends StatelessWidget {
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
         ),
       ),
     );
@@ -407,7 +450,12 @@ class _DropdownField<T> extends StatelessWidget {
   final List<DropdownMenuItem<T>> items;
   final ValueChanged<T?> onChanged;
 
-  const _DropdownField({required this.value, required this.label, required this.items, required this.onChanged});
+  const _DropdownField({
+    required this.value,
+    required this.label,
+    required this.items,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -422,7 +470,7 @@ class _DropdownField<T> extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-           Text(
+          Text(
             label,
             style: TextStyle(
               fontSize: 10,
@@ -435,9 +483,17 @@ class _DropdownField<T> extends StatelessWidget {
               value: value,
               items: items,
               onChanged: onChanged,
-              icon: Icon(Icons.keyboard_arrow_down_rounded, color: colorScheme.primary, size: 20),
-              dropdownColor: theme.cardColor,
-              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Colors.white),
+              icon: Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: colorScheme.primary,
+                size: 20,
+              ),
+              dropdownColor: Theme.of(context).cardColor,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+                color: Colors.white,
+              ),
               isExpanded: true,
             ),
           ),

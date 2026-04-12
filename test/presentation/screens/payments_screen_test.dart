@@ -1,4 +1,6 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:teacher_school_app/l10n/app_localizations.dart';
 import 'package:teacher_school_app/data/models/payment_model.dart';
 import 'package:teacher_school_app/presentation/providers/payment_provider.dart';
 import 'package:teacher_school_app/presentation/screens/payments/payments_screen.dart';
@@ -9,6 +11,7 @@ void main() {
   testWidgets('payments screen renders localized filters and student status', (
     tester,
   ) async {
+    final l10n = lookupAppLocalizations(const Locale('uz'));
     await tester.pumpWidget(
       buildTestApp(
         const PaymentsScreen(),
@@ -35,11 +38,11 @@ void main() {
         ],
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    expect(find.text('To\'lovlar (o\'quvchilar)'), findsOneWidget);
-    expect(find.text('Barcha guruhlar'), findsAtLeastNWidgets(1));
+    expect(find.text(l10n.paymentsTitle), findsOneWidget);
+    expect(find.text(l10n.allGroups), findsAtLeastNWidgets(1));
     expect(find.text('Aziza Aliyeva'), findsOneWidget);
-    expect(find.text('To\'lagan'), findsOneWidget);
+    expect(find.text(l10n.paidStatus.toUpperCase()), findsOneWidget);
   });
 }

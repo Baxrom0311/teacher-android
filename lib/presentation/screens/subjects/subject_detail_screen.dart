@@ -1,14 +1,15 @@
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../../data/models/subject_model.dart';
 import '../../providers/subject_provider.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
+import '../../widgets/common/animated_pressable.dart';
 import '../../widgets/app_feedback.dart';
-import 'dart:ui';
 
 class SubjectDetailScreen extends ConsumerStatefulWidget {
   final int subjectId;
@@ -41,8 +42,6 @@ class _SubjectDetailScreenState extends ConsumerState<SubjectDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final detailAsync = ref.watch(subjectDetailProvider(widget.subjectId));
 
     return PageBackground(
@@ -66,7 +65,10 @@ class _SubjectDetailScreenState extends ConsumerState<SubjectDetailScreen> {
                   ),
                   title: Text(
                     widget.title,
-                    style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 20,
+                    ),
                   ),
                 ),
                 if (groups.isEmpty)
@@ -80,17 +82,14 @@ class _SubjectDetailScreenState extends ConsumerState<SubjectDetailScreen> {
                   SliverPadding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
                     sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final group = groups[index];
-                          return _GroupSection(
-                            group: group,
-                            subjectId: widget.subjectId,
-                            onLaunchUrl: _launchUrl,
-                          );
-                        },
-                        childCount: groups.length,
-                      ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final group = groups[index];
+                        return _GroupSection(
+                          group: group,
+                          subjectId: widget.subjectId,
+                          onLaunchUrl: _launchUrl,
+                        );
+                      }, childCount: groups.length),
                     ),
                   ),
               ],
@@ -100,7 +99,8 @@ class _SubjectDetailScreenState extends ConsumerState<SubjectDetailScreen> {
           error: (err, stack) => Center(
             child: AppErrorView(
               message: ApiErrorHandler.readableMessage(err),
-              onRetry: () => ref.invalidate(subjectDetailProvider(widget.subjectId)),
+              onRetry: () =>
+                  ref.invalidate(subjectDetailProvider(widget.subjectId)),
             ),
           ),
         ),
@@ -141,20 +141,28 @@ class _GroupSection extends StatelessWidget {
                 ),
               ),
               AnimatedPressable(
-                onTap: () => GoRouter.of(context).push(
-                  '/subjects/$subjectId/create-topic',
-                  extra: group,
-                ),
+                onTap: () => GoRouter.of(
+                  context,
+                ).push('/subjects/$subjectId/create-topic', extra: group),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: colorScheme.primary.withValues(alpha: 0.2)),
+                    border: Border.all(
+                      color: colorScheme.primary.withValues(alpha: 0.2),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.add_rounded, size: 18, color: colorScheme.primary),
+                      Icon(
+                        Icons.add_rounded,
+                        size: 18,
+                        color: colorScheme.primary,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         l10n.addTopicTooltip,
@@ -183,10 +191,12 @@ class _GroupSection extends StatelessWidget {
             ),
           )
         else
-          ...group.topics.map((topic) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _TopicItem(topic: topic, onLaunchUrl: onLaunchUrl),
-              )),
+          ...group.topics.map(
+            (topic) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _TopicItem(topic: topic, onLaunchUrl: onLaunchUrl),
+            ),
+          ),
         const SizedBox(height: 16),
         Divider(color: Colors.white.withValues(alpha: 0.05), thickness: 1),
         const SizedBox(height: 8),
@@ -215,7 +225,10 @@ class _TopicItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
@@ -269,7 +282,11 @@ class _TopicItem extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.attachment_rounded, size: 14, color: colorScheme.onSurface.withValues(alpha: 0.3)),
+                  Icon(
+                    Icons.attachment_rounded,
+                    size: 14,
+                    color: colorScheme.onSurface.withValues(alpha: 0.3),
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     l10n.filesTitle.toUpperCase(),
@@ -287,7 +304,14 @@ class _TopicItem extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: topic.resources.map((res) => _ResourceChip(res: res, onTap: () => onLaunchUrl(res.url))).toList(),
+              children: topic.resources
+                  .map(
+                    (res) => _ResourceChip(
+                      res: res,
+                      onTap: () => onLaunchUrl(res.url),
+                    ),
+                  )
+                  .toList(),
             ),
           ],
         ],
@@ -297,7 +321,7 @@ class _TopicItem extends StatelessWidget {
 }
 
 class _ResourceChip extends StatelessWidget {
-  final SubjectResource res;
+  final TopicResource res;
   final VoidCallback onTap;
   const _ResourceChip({required this.res, required this.onTap});
 
@@ -336,4 +360,3 @@ class _ResourceChip extends StatelessWidget {
     );
   }
 }
-

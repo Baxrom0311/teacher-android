@@ -1,8 +1,11 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 
 import 'package:teacher_school_app/data/models/subject_model.dart';
 import 'package:teacher_school_app/data/repositories/subject_repository.dart';
+import 'package:teacher_school_app/l10n/app_localizations.dart';
 import 'package:teacher_school_app/presentation/providers/subject_provider.dart';
 import 'package:teacher_school_app/presentation/screens/subjects/topic_create_screen.dart';
 
@@ -12,6 +15,7 @@ class MockSubjectRepository extends Mock implements SubjectRepository {}
 
 void main() {
   testWidgets('topic create screen renders localized form', (tester) async {
+    final l10n = lookupAppLocalizations(const Locale('uz'));
     await tester.pumpWidget(
       buildTestApp(
         TopicCreateScreen(
@@ -32,11 +36,11 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Yangi mavzu'), findsOneWidget);
-    expect(find.text('Sarlavha'), findsOneWidget);
-    expect(find.text('Qo\'shimcha ma\'lumotlar (ixtiyoriy)'), findsOneWidget);
-    expect(find.textContaining('Guruh:'), findsOneWidget);
-    expect(find.text('Biriktirilgan fayllar'), findsOneWidget);
-    expect(find.text('Mavzuni qo\'shish'), findsOneWidget);
+    expect(find.text(l10n.newTopicTitle), findsOneWidget);
+    expect(find.text(l10n.topicTitleLabel.toUpperCase()), findsOneWidget);
+    expect(find.text(l10n.topicDescriptionLabel.toUpperCase()), findsOneWidget);
+    expect(find.text(l10n.groupLabelText('7-A')), findsOneWidget);
+    expect(find.text(l10n.attachedFilesTitle.toUpperCase()), findsOneWidget);
+    expect(find.text(l10n.addTopicAction), findsOneWidget);
   });
 }

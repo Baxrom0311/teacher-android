@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../common/animated_pressable.dart';
-import '../common/premium_card.dart';
+import '../../core/constants/app_colors.dart';
+import 'common/animated_pressable.dart';
+import 'common/premium_card.dart';
 
 class AppLoadingView extends StatelessWidget {
   final String? title;
@@ -123,7 +123,10 @@ class AppErrorView extends StatelessWidget {
               AnimatedPressable(
                 onTap: onRetry,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
                     color: colorScheme.error,
                     borderRadius: BorderRadius.circular(16),
@@ -155,13 +158,13 @@ class AppErrorView extends StatelessWidget {
 
 class AppEmptyView extends StatelessWidget {
   final String? title;
-  final String message;
+  final String? message;
   final IconData icon;
 
   const AppEmptyView({
     super.key,
     this.title,
-    required this.message,
+    this.message,
     this.icon = Icons.inbox_rounded,
   });
 
@@ -169,6 +172,7 @@ class AppEmptyView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsRegistry.instance;
     final resolvedTitle = title ?? l10n.emptyTitle;
+    final resolvedMessage = message ?? resolvedTitle;
     final colorScheme = Theme.of(context).colorScheme;
 
     return Center(
@@ -193,12 +197,76 @@ class AppEmptyView extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              message,
+              resolvedMessage,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: colorScheme.onSurface.withValues(alpha: 0.4),
                 fontWeight: FontWeight.w600,
                 fontSize: 15,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AppFeedback {
+  AppFeedback._();
+
+  static void showSuccess(BuildContext context, String message) {
+    _show(
+      context,
+      message: message,
+      backgroundColor: TeacherAppColors.success,
+      foregroundColor: Colors.white,
+      icon: Icons.check_circle_rounded,
+    );
+  }
+
+  static void showError(BuildContext context, String message) {
+    _show(
+      context,
+      message: message,
+      backgroundColor: TeacherAppColors.error,
+      foregroundColor: Colors.white,
+      icon: Icons.error_rounded,
+    );
+  }
+
+  static void showInfo(BuildContext context, String message) {
+    _show(
+      context,
+      message: message,
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      foregroundColor: Colors.white,
+      icon: Icons.info_rounded,
+    );
+  }
+
+  static void _show(
+    BuildContext context, {
+    required String message,
+    required Color backgroundColor,
+    required Color foregroundColor,
+    required IconData icon,
+  }) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: backgroundColor,
+        content: Row(
+          children: [
+            Icon(icon, color: foregroundColor, size: 18),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(
+                  color: foregroundColor,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ],
@@ -226,7 +294,10 @@ class AppInlineMessageCard extends StatelessWidget {
     final (color, icon) = switch (type) {
       AppInlineMessageType.info => (colorScheme.primary, Icons.info_rounded),
       AppInlineMessageType.error => (colorScheme.error, Icons.error_rounded),
-      AppInlineMessageType.success => (TeacherAppColors.success, Icons.check_circle_rounded),
+      AppInlineMessageType.success => (
+        TeacherAppColors.success,
+        Icons.check_circle_rounded,
+      ),
     };
 
     return PremiumCard(

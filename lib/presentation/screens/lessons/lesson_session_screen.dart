@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
-import '../../providers/lesson_session_provider.dart';
+import '../../providers/lesson_provider.dart';
 import '../../widgets/app_feedback.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
+import '../../widgets/common/animated_pressable.dart';
 
 class LessonSessionScreen extends ConsumerStatefulWidget {
   final int sessionId;
@@ -85,11 +84,15 @@ class _LessonSessionScreenState extends ConsumerState<LessonSessionScreen> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
-          title: Text(l10n.lessonSessionTitle, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20)),
+          title: Text(
+            l10n.lessonSessionTitle,
+            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
+          ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.assignment_add_rounded, color: Colors.white),
-              onPressed: () => context.push('/homework/create/${widget.sessionId}'),
+              icon: const Icon(Icons.note_add_rounded, color: Colors.white),
+              onPressed: () =>
+                  context.push('/homework/create/${widget.sessionId}'),
             ),
             const SizedBox(width: 8),
           ],
@@ -97,19 +100,33 @@ class _LessonSessionScreenState extends ConsumerState<LessonSessionScreen> {
         body: sessionState.isLoading && sessionState.detail == null
             ? const AppLoadingView()
             : sessionState.error != null && sessionState.detail == null
-                ? AppErrorView(
-                    message: ApiErrorHandler.readableMessage(sessionState.error),
-                    onRetry: () => ref.read(lessonSessionControllerProvider(widget.sessionId).notifier).loadSession(),
-                  )
-                : _buildContent(context, ref, sessionState),
+            ? AppErrorView(
+                message: ApiErrorHandler.readableMessage(sessionState.error),
+                onRetry: () => ref
+                    .read(
+                      lessonSessionControllerProvider(
+                        widget.sessionId,
+                      ).notifier,
+                    )
+                    .loadSession(),
+              )
+            : _buildContent(context, ref, sessionState),
         bottomNavigationBar: sessionState.detail != null
             ? Container(
-                padding: EdgeInsets.fromLTRB(20, 16, 20, 16 + MediaQuery.paddingOf(context).bottom),
+                padding: EdgeInsets.fromLTRB(
+                  20,
+                  16,
+                  20,
+                  16 + MediaQuery.paddingOf(context).bottom,
+                ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Colors.black.withValues(alpha: 0.8)],
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.8),
+                    ],
                   ),
                 ),
                 child: AnimatedPressable(
@@ -117,18 +134,36 @@ class _LessonSessionScreenState extends ConsumerState<LessonSessionScreen> {
                   child: Container(
                     height: 56,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [colorScheme.primary, colorScheme.secondary]),
+                      gradient: LinearGradient(
+                        colors: [colorScheme.primary, colorScheme.secondary],
+                      ),
                       borderRadius: BorderRadius.circular(18),
                       boxShadow: [
-                        BoxShadow(color: colorScheme.primary.withValues(alpha: 0.3), blurRadius: 15, offset: const Offset(0, 8))
+                        BoxShadow(
+                          color: colorScheme.primary.withValues(alpha: 0.3),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
+                        ),
                       ],
                     ),
                     child: Center(
                       child: sessionState.isLoading
-                          ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 3, color: Colors.white))
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                                color: Colors.white,
+                              ),
+                            )
                           : Text(
                               l10n.saveAction.toUpperCase(),
-                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 1.5),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 14,
+                                letterSpacing: 1.5,
+                              ),
                             ),
                     ),
                   ),
@@ -172,14 +207,25 @@ class _LessonSessionScreenState extends ConsumerState<LessonSessionScreen> {
                   const SizedBox(height: 12),
                   TextField(
                     controller: _topicController,
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 16,
+                    ),
                     decoration: InputDecoration(
                       hintText: l10n.lessonSessionTopicHint,
-                      hintStyle: TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.3)),
+                      hintStyle: TextStyle(
+                        color: colorScheme.onSurface.withValues(alpha: 0.3),
+                      ),
                       filled: true,
                       fillColor: Colors.white.withValues(alpha: 0.05),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
                     ),
                   ),
                 ],
@@ -223,7 +269,6 @@ class _LessonSessionScreenState extends ConsumerState<LessonSessionScreen> {
     dynamic row,
     String gradingMode,
   ) {
-    final l10n = context.l10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isPresent = row.isPresent;
@@ -244,7 +289,9 @@ class _LessonSessionScreenState extends ConsumerState<LessonSessionScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: isPresent ? colorScheme.onSurface : colorScheme.onSurface.withValues(alpha: 0.4),
+                    color: isPresent
+                        ? colorScheme.onSurface
+                        : colorScheme.onSurface.withValues(alpha: 0.4),
                   ),
                 ),
               ),
@@ -275,26 +322,43 @@ class _LessonSessionScreenState extends ConsumerState<LessonSessionScreen> {
             child: AnimatedPressable(
               onTap: () {
                 ref
-                    .read(lessonSessionControllerProvider(widget.sessionId).notifier)
+                    .read(
+                      lessonSessionControllerProvider(
+                        widget.sessionId,
+                      ).notifier,
+                    )
                     .updateRowGrade(row.studentId, isSelected ? null : grade);
               },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: isSelected ? color : color.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: isSelected ? color : color.withValues(alpha: 0.1), width: 1.5),
-                    boxShadow: isSelected ? [
-                      BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4))
-                    ] : [],
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: isSelected ? color : color.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isSelected ? color : color.withValues(alpha: 0.1),
+                    width: 1.5,
                   ),
-                  child: Center(
-                    child: Text(
-                      grade.toString(),
-                      style: TextStyle(color: isSelected ? Colors.white : color, fontWeight: FontWeight.w900, fontSize: 16),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: color.withValues(alpha: 0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
+                      : [],
+                ),
+                child: Center(
+                  child: Text(
+                    grade.toString(),
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : color,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 16,
                     ),
                   ),
                 ),
+              ),
             ),
           ),
         );
@@ -304,7 +368,6 @@ class _LessonSessionScreenState extends ConsumerState<LessonSessionScreen> {
 
   Widget _buildCoinSelector(WidgetRef ref, dynamic row) {
     final coinValues = [5, 10, 20, 50, 100];
-    final colorScheme = Theme.of(context).colorScheme;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -316,13 +379,22 @@ class _LessonSessionScreenState extends ConsumerState<LessonSessionScreen> {
             child: AnimatedPressable(
               onTap: () {
                 ref
-                    .read(lessonSessionControllerProvider(widget.sessionId).notifier)
+                    .read(
+                      lessonSessionControllerProvider(
+                        widget.sessionId,
+                      ).notifier,
+                    )
                     .updateRowCoin(row.studentId, isSelected ? null : coin);
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
-                  color: isSelected ? TeacherAppColors.warning : TeacherAppColors.warning.withValues(alpha: 0.08),
+                  color: isSelected
+                      ? TeacherAppColors.warning
+                      : TeacherAppColors.warning.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -330,13 +402,17 @@ class _LessonSessionScreenState extends ConsumerState<LessonSessionScreen> {
                     Icon(
                       Icons.stars_rounded,
                       size: 16,
-                      color: isSelected ? Colors.white : TeacherAppColors.warning,
+                      color: isSelected
+                          ? Colors.white
+                          : TeacherAppColors.warning,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       coin.toString(),
                       style: TextStyle(
-                        color: isSelected ? Colors.white : TeacherAppColors.warning,
+                        color: isSelected
+                            ? Colors.white
+                            : TeacherAppColors.warning,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -352,12 +428,18 @@ class _LessonSessionScreenState extends ConsumerState<LessonSessionScreen> {
 
   Color _getGradeColor(int grade) {
     switch (grade) {
-      case 5: return TeacherAppColors.grade5;
-      case 4: return TeacherAppColors.grade4;
-      case 3: return TeacherAppColors.grade3;
-      case 2: return TeacherAppColors.grade2;
-      case 1: return TeacherAppColors.grade1;
-      default: return TeacherAppColors.textSecondary;
+      case 5:
+        return TeacherAppColors.grade5;
+      case 4:
+        return TeacherAppColors.grade4;
+      case 3:
+        return TeacherAppColors.grade3;
+      case 2:
+        return TeacherAppColors.grade2;
+      case 1:
+        return TeacherAppColors.grade1;
+      default:
+        return TeacherAppColors.textSecondary;
     }
   }
 }
@@ -382,7 +464,11 @@ class _AvatarSmall extends StatelessWidget {
       child: Center(
         child: Text(
           name.isNotEmpty ? name[0].toUpperCase() : 'S',
-          style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 16),
+          style: TextStyle(
+            color: color,
+            fontWeight: FontWeight.w900,
+            fontSize: 16,
+          ),
         ),
       ),
     );

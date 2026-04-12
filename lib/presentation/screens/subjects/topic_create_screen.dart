@@ -1,14 +1,16 @@
+import 'package:go_router/go_router.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../providers/subject_provider.dart';
 import '../../../data/models/subject_model.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
+import '../../widgets/common/animated_pressable.dart';
 import '../../widgets/app_feedback.dart';
-import 'dart:ui';
 
 class TopicCreateScreen extends ConsumerStatefulWidget {
   final int subjectId;
@@ -41,7 +43,16 @@ class _TopicCreateScreenState extends ConsumerState<TopicCreateScreen> {
       allowMultiple: true,
       type: FileType.custom,
       allowedExtensions: [
-        'pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png',
+        'pdf',
+        'doc',
+        'docx',
+        'ppt',
+        'pptx',
+        'xls',
+        'xlsx',
+        'jpg',
+        'jpeg',
+        'png',
       ],
     );
 
@@ -91,7 +102,10 @@ class _TopicCreateScreenState extends ConsumerState<TopicCreateScreen> {
       context.pop();
     } else if (mounted) {
       final state = ref.read(subjectControllerProvider);
-      AppFeedback.showError(context, ApiErrorHandler.readableMessage(state.error));
+      AppFeedback.showError(
+        context,
+        ApiErrorHandler.readableMessage(state.error),
+      );
     }
   }
 
@@ -107,7 +121,10 @@ class _TopicCreateScreenState extends ConsumerState<TopicCreateScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text(l10n.newTopicTitle, style: const TextStyle(fontWeight: FontWeight.w900)),
+          title: Text(
+            l10n.newTopicTitle,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
@@ -132,7 +149,11 @@ class _TopicCreateScreenState extends ConsumerState<TopicCreateScreen> {
                         color: colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Icon(Icons.people_rounded, color: colorScheme.primary, size: 20),
+                      child: Icon(
+                        Icons.people_rounded,
+                        color: colorScheme.primary,
+                        size: 20,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -149,7 +170,7 @@ class _TopicCreateScreenState extends ConsumerState<TopicCreateScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              
+
               _SectionTitle(title: l10n.topicTitleLabel),
               _InputField(
                 controller: _titleController,
@@ -174,14 +195,21 @@ class _TopicCreateScreenState extends ConsumerState<TopicCreateScreen> {
                   AnimatedPressable(
                     onTap: isLoading ? null : _pickFiles,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.add_rounded, size: 18, color: colorScheme.primary),
+                          Icon(
+                            Icons.add_rounded,
+                            size: 18,
+                            color: colorScheme.primary,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             l10n.chooseFileAction,
@@ -200,7 +228,10 @@ class _TopicCreateScreenState extends ConsumerState<TopicCreateScreen> {
               const SizedBox(height: 12),
               if (_filePaths.isEmpty)
                 PremiumCard(
-                  padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 24,
+                    horizontal: 16,
+                  ),
                   child: Center(
                     child: Column(
                       children: [
@@ -238,7 +269,7 @@ class _TopicCreateScreenState extends ConsumerState<TopicCreateScreen> {
                     );
                   },
                 ),
-              
+
               const SizedBox(height: 40),
             ],
           ),
@@ -253,9 +284,12 @@ class _TopicCreateScreenState extends ConsumerState<TopicCreateScreen> {
                 height: 56,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: isLoading 
-                      ? [colorScheme.surfaceVariant, colorScheme.surfaceVariant] 
-                      : [colorScheme.primary, colorScheme.secondary],
+                    colors: isLoading
+                        ? [
+                            colorScheme.surfaceContainerHighest,
+                            colorScheme.surfaceContainerHighest,
+                          ]
+                        : [colorScheme.primary, colorScheme.secondary],
                   ),
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
@@ -272,7 +306,10 @@ class _TopicCreateScreenState extends ConsumerState<TopicCreateScreen> {
                       ? const SizedBox(
                           width: 24,
                           height: 24,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
                         )
                       : Text(
                           l10n.addTopicAction,
@@ -369,7 +406,11 @@ class _FileItem extends StatelessWidget {
               color: colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(Icons.file_present_rounded, color: colorScheme.primary, size: 20),
+            child: Icon(
+              Icons.file_present_rounded,
+              color: colorScheme.primary,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -381,7 +422,11 @@ class _FileItem extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline_rounded, color: TeacherAppColors.error, size: 20),
+            icon: const Icon(
+              Icons.delete_outline_rounded,
+              color: TeacherAppColors.error,
+              size: 20,
+            ),
             onPressed: onDelete,
           ),
         ],
@@ -389,4 +434,3 @@ class _FileItem extends StatelessWidget {
     );
   }
 }
-

@@ -1,13 +1,16 @@
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
+
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
+
 import '../../../core/network/api_error_handler.dart';
 import '../../../data/models/timetable_model.dart';
 import '../../providers/timetable_provider.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
 import '../../widgets/app_feedback.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
 
 class TimetableScreen extends ConsumerStatefulWidget {
   const TimetableScreen({super.key});
@@ -24,10 +27,6 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    // Only fetch 1 day for the detailed view of the selected date
     final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDay);
     final timetableAsync = ref.watch(
       timetableProvider({'date': dateStr, 'days': 1}),
@@ -37,25 +36,45 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text(l10n.timetableTitle, style: const TextStyle(fontWeight: FontWeight.w900)),
+          title: Text(
+            l10n.timetableTitle,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
         ),
         body: Column(
           children: [
-            _buildCalendarSection(colorScheme, l10n),
+            _CalendarSection(
+              focusedDay: _focusedDay,
+              selectedDay: _selectedDay,
+              calendarFormat: _calendarFormat,
+              localeTag: l10n.intlLocaleTag,
+              onFormatChanged: (format) {
+                setState(() => _calendarFormat = format);
+              },
+              onDaySelected: (selectedDay, focusedDay) {
+                setState(() {
+                  _selectedDay = selectedDay;
+                  _focusedDay = focusedDay;
+                });
+              },
+            ),
             const SizedBox(height: 20),
             Expanded(
               child: timetableAsync.when(
                 data: (data) {
-                  final schedule = data['schedule_by_date'] as Map<String, List<TimetableEntry>>;
-                  final entries = schedule[dateStr] ?? [];
+                  final schedule =
+                      data['schedule_by_date']
+                          as Map<String, List<TimetableEntry>>;
+                  final entries = schedule[dateStr] ?? const [];
 
                   if (entries.isEmpty) {
                     return Center(
                       child: AppEmptyView(
                         title: l10n.noLessonsOnSelectedDate,
+                        message: l10n.noLessonsOnSelectedDate,
                         icon: Icons.event_busy_rounded,
                       ),
                     );
@@ -66,10 +85,9 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                     physics: const BouncingScrollPhysics(),
                     itemCount: entries.length,
                     itemBuilder: (context, index) {
-                      final entry = entries[index];
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
-                        child: _TimetableEntryCard(entry: entry),
+                        child: _TimetableEntryCard(entry: entries[index]),
                       );
                     },
                   );
@@ -86,70 +104,85 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
       ),
     );
   }
+}
 
-  Widget _buildCalendarSection(ColorScheme colorScheme, dynamic l10n) {
+class _CalendarSection extends StatelessWidget {
+  final DateTime focusedDay;
+  final DateTime selectedDay;
+  final CalendarFormat calendarFormat;
+  final String localeTag;
+  final ValueChanged<CalendarFormat> onFormatChanged;
+  final void Function(DateTime selectedDay, DateTime focusedDay) onDaySelected;
+
+  const _CalendarSection({
+    required this.focusedDay,
+    required this.selectedDay,
+    required this.calendarFormat,
+    required this.localeTag,
+    required this.onFormatChanged,
+    required this.onDaySelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: Colors.white.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: TableCalendar(
         firstDay: DateTime.now().subtract(const Duration(days: 365)),
         lastDay: DateTime.now().add(const Duration(days: 365)),
-        focusedDay: _focusedDay,
-        selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-        calendarFormat: _calendarFormat,
-        locale: l10n.intlLocaleTag,
-        onFormatChanged: (format) => setState(() => _calendarFormat = format),
-        onDaySelected: (selectedDay, focusedDay) {
-          setState(() {
-            _selectedDay = selectedDay;
-            _focusedDay = focusedDay;
-          });
-        },
+        focusedDay: focusedDay,
+        selectedDayPredicate: (day) => isSameDay(selectedDay, day),
+        calendarFormat: calendarFormat,
+        locale: localeTag,
+        onFormatChanged: onFormatChanged,
+        onDaySelected: onDaySelected,
         startingDayOfWeek: StartingDayOfWeek.monday,
         headerStyle: HeaderStyle(
           formatButtonVisible: false,
           titleCentered: true,
-          titleTextStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
-          leftChevronIcon: Icon(Icons.chevron_left_rounded, color: colorScheme.primary),
-          rightChevronIcon: Icon(Icons.chevron_right_rounded, color: colorScheme.primary),
+          titleTextStyle: const TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 16,
+          ),
+          leftChevronIcon: Icon(
+            Icons.chevron_left_rounded,
+            color: colorScheme.primary,
+          ),
+          rightChevronIcon: Icon(
+            Icons.chevron_right_rounded,
+            color: colorScheme.primary,
+          ),
         ),
         calendarStyle: CalendarStyle(
           selectedDecoration: BoxDecoration(
-            gradient: LinearGradient(colors: [colorScheme.primary, colorScheme.secondary]),
+            gradient: LinearGradient(
+              colors: [colorScheme.primary, colorScheme.secondary],
+            ),
             shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: colorScheme.primary.withValues(alpha: 0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              )
-            ],
           ),
           todayDecoration: BoxDecoration(
             color: colorScheme.primary.withValues(alpha: 0.1),
             shape: BoxShape.circle,
-            border: Border.all(color: colorScheme.primary.withValues(alpha: 0.4)),
+            border: Border.all(
+              color: colorScheme.primary.withValues(alpha: 0.4),
+            ),
           ),
-          todayTextStyle: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.w900),
+          todayTextStyle: TextStyle(
+            color: colorScheme.primary,
+            fontWeight: FontWeight.w900,
+          ),
           defaultTextStyle: const TextStyle(fontWeight: FontWeight.w600),
-          weekendTextStyle: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
+          weekendTextStyle: TextStyle(
+            color: colorScheme.error.withValues(alpha: 0.45),
+          ),
           outsideDaysVisible: false,
-        ),
-        daysOfWeekStyle: DaysOfWeekStyle(
-          weekdayStyle: TextStyle(
-            color: Colors.white.withValues(alpha: 0.4),
-            fontWeight: FontWeight.w900,
-            fontSize: 12,
-          ),
-          weekendStyle: TextStyle(
-            color: colorScheme.error.withValues(alpha: 0.4),
-            fontWeight: FontWeight.w900,
-            fontSize: 12,
-          ),
         ),
       ),
     );
@@ -158,6 +191,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
 
 class _TimetableEntryCard extends StatelessWidget {
   final TimetableEntry entry;
+
   const _TimetableEntryCard({required this.entry});
 
   @override
@@ -175,7 +209,9 @@ class _TimetableEntryCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: colorScheme.primary.withValues(alpha: 0.2)),
+              border: Border.all(
+                color: colorScheme.primary.withValues(alpha: 0.2),
+              ),
             ),
             child: Center(
               child: Text(
@@ -195,7 +231,10 @@ class _TimetableEntryCard extends StatelessWidget {
               children: [
                 Text(
                   entry.subjectName ?? l10n.unknownSubjectFallback,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -203,7 +242,7 @@ class _TimetableEntryCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: colorScheme.onSurface.withValues(alpha: 0.4),
+                    color: colorScheme.onSurface.withValues(alpha: 0.45),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -211,12 +250,13 @@ class _TimetableEntryCard extends StatelessWidget {
                   children: [
                     _MetaBadge(
                       icon: Icons.access_time_filled_rounded,
-                      label: '${entry.startsAt?.substring(0, 5) ?? '00:00'} - ${entry.endsAt?.substring(0, 5) ?? '00:00'}',
+                      label:
+                          '${entry.startsAt?.substring(0, 5) ?? '00:00'} - ${entry.endsAt?.substring(0, 5) ?? '00:00'}',
                     ),
                     const SizedBox(width: 12),
                     _MetaBadge(
                       icon: Icons.meeting_room_rounded,
-                      label: entry.roomName != null && entry.roomName!.isNotEmpty
+                      label: entry.roomName?.isNotEmpty == true
                           ? entry.roomName!
                           : '-',
                     ),
@@ -255,5 +295,4 @@ class _MetaBadge extends StatelessWidget {
       ],
     );
   }
-}
 }

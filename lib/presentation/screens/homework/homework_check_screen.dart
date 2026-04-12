@@ -1,16 +1,13 @@
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../providers/homework_provider.dart';
 import '../../widgets/app_feedback.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
-import 'package:intl/intl.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
+import '../../widgets/common/animated_pressable.dart';
 
 class HomeworkCheckScreen extends ConsumerWidget {
   final int lessonHomeworkId;
@@ -27,7 +24,7 @@ class HomeworkCheckScreen extends ConsumerWidget {
     WidgetRef ref,
     int studentHomeworkId,
   ) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = context.l10n;
     int selectedGrade = 5;
     final commentController = TextEditingController();
 
@@ -40,17 +37,27 @@ class HomeworkCheckScreen extends ConsumerWidget {
             return AlertDialog(
               backgroundColor: const Color(0xFF1A1C1E),
               surfaceTintColor: Colors.transparent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28), side: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(28),
+                side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+              ),
               title: Text(
                 l10n.homeworkCheckDialogTitle,
-                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 20,
+                ),
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Text(
-                    l10n.homeworkGradeLabel('').replaceAll(':', '').trim().toUpperCase(),
+                  Text(
+                    l10n
+                        .homeworkGradeLabel(0)
+                        .replaceAll(': 0', '')
+                        .trim()
+                        .toUpperCase(),
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
                       fontSize: 11,
@@ -69,21 +76,35 @@ class HomeworkCheckScreen extends ConsumerWidget {
                           width: 48,
                           height: 48,
                           decoration: BoxDecoration(
-                            color: isSelected ? colorScheme.primary : Colors.white.withValues(alpha: 0.05),
+                            color: isSelected
+                                ? colorScheme.primary
+                                : Colors.white.withValues(alpha: 0.05),
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: isSelected ? colorScheme.primary : Colors.white.withValues(alpha: 0.1),
+                              color: isSelected
+                                  ? colorScheme.primary
+                                  : Colors.white.withValues(alpha: 0.1),
                               width: 2,
                             ),
-                            boxShadow: isSelected ? [
-                              BoxShadow(color: colorScheme.primary.withValues(alpha: 0.4), blurRadius: 10, offset: const Offset(0, 4))
-                            ] : [],
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: colorScheme.primary.withValues(
+                                        alpha: 0.4,
+                                      ),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ]
+                                : [],
                           ),
                           child: Center(
                             child: Text(
                               g.toString(),
                               style: TextStyle(
-                                color: isSelected ? Colors.white : colorScheme.onSurface,
+                                color: isSelected
+                                    ? Colors.white
+                                    : colorScheme.onSurface,
                                 fontWeight: FontWeight.w900,
                                 fontSize: 16,
                               ),
@@ -107,14 +128,25 @@ class HomeworkCheckScreen extends ConsumerWidget {
                   TextField(
                     controller: commentController,
                     maxLines: 2,
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
                     decoration: InputDecoration(
                       hintText: l10n.homeworkCommentHint,
-                      hintStyle: TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.3)),
+                      hintStyle: TextStyle(
+                        color: colorScheme.onSurface.withValues(alpha: 0.3),
+                      ),
                       filled: true,
                       fillColor: Colors.white.withValues(alpha: 0.05),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
                     ),
                   ),
                 ],
@@ -122,7 +154,10 @@ class HomeworkCheckScreen extends ConsumerWidget {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(ctx),
-                  child: Text(l10n.cancel, style: const TextStyle(fontWeight: FontWeight.w700)),
+                  child: Text(
+                    l10n.cancel,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
                 ),
                 AnimatedPressable(
                   onTap: () async {
@@ -137,21 +172,37 @@ class HomeworkCheckScreen extends ConsumerWidget {
                               : commentController.text.trim(),
                         );
                     if (success) {
-                      ref.invalidate(homeworkSubmissionsProvider(lessonHomeworkId));
+                      ref.invalidate(
+                        homeworkSubmissionsProvider(lessonHomeworkId),
+                      );
                     }
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [colorScheme.primary, colorScheme.secondary]),
+                      gradient: LinearGradient(
+                        colors: [colorScheme.primary, colorScheme.secondary],
+                      ),
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
-                        BoxShadow(color: colorScheme.primary.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4))
+                        BoxShadow(
+                          color: colorScheme.primary.withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
                       ],
                     ),
                     child: Text(
                       l10n.saveAction.toUpperCase(),
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 12,
+                        letterSpacing: 1,
+                      ),
                     ),
                   ),
                 ),
@@ -166,8 +217,6 @@ class HomeworkCheckScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final submissionsAsync = ref.watch(
       homeworkSubmissionsProvider(lessonHomeworkId),
     );
@@ -176,7 +225,10 @@ class HomeworkCheckScreen extends ConsumerWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
+          title: Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
@@ -210,7 +262,8 @@ class HomeworkCheckScreen extends ConsumerWidget {
           error: (err, st) => AppErrorView(
             message: ApiErrorHandler.readableMessage(err),
             icon: Icons.assignment_late_rounded,
-            onRetry: () => ref.invalidate(homeworkSubmissionsProvider(lessonHomeworkId)),
+            onRetry: () =>
+                ref.invalidate(homeworkSubmissionsProvider(lessonHomeworkId)),
           ),
         ),
       ),
@@ -245,15 +298,23 @@ class _SubmissionCard extends StatelessWidget {
                   children: [
                     Text(
                       submission.studentName,
-                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                      ),
                     ),
                     Text(
-                      (isGraded ? l10n.homeworkStatusLabel('graded') : l10n.homeworkStatusLabel('pending')).toUpperCase(),
+                      (isGraded
+                              ? l10n.homeworkStatusLabel('graded')
+                              : l10n.homeworkStatusLabel('pending'))
+                          .toUpperCase(),
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 0.5,
-                        color: isGraded ? TeacherAppColors.success : TeacherAppColors.late,
+                        color: isGraded
+                            ? TeacherAppColors.success
+                            : TeacherAppColors.late,
                       ),
                     ),
                   ],
@@ -261,9 +322,14 @@ class _SubmissionCard extends StatelessWidget {
               ),
               if (isGraded && submission.grade != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    color: _getGradeColor(submission.grade!).withValues(alpha: 0.1),
+                    color: _getGradeColor(
+                      submission.grade!,
+                    ).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
@@ -288,11 +354,17 @@ class _SubmissionCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: colorScheme.primary.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: colorScheme.primary.withValues(alpha: 0.1)),
+                  border: Border.all(
+                    color: colorScheme.primary.withValues(alpha: 0.1),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.description_rounded, color: colorScheme.primary, size: 20),
+                    Icon(
+                      Icons.description_rounded,
+                      color: colorScheme.primary,
+                      size: 20,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -304,7 +376,11 @@ class _SubmissionCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Icon(Icons.open_in_new_rounded, color: colorScheme.primary.withValues(alpha: 0.5), size: 16),
+                    Icon(
+                      Icons.open_in_new_rounded,
+                      color: colorScheme.primary.withValues(alpha: 0.5),
+                      size: 16,
+                    ),
                   ],
                 ),
               ),
@@ -317,9 +393,13 @@ class _SubmissionCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
-                color: isGraded ? Colors.white.withValues(alpha: 0.03) : colorScheme.primary,
+                color: isGraded
+                    ? Colors.white.withValues(alpha: 0.03)
+                    : colorScheme.primary,
                 borderRadius: BorderRadius.circular(12),
-                border: isGraded ? Border.all(color: Colors.white.withValues(alpha: 0.1)) : null,
+                border: isGraded
+                    ? Border.all(color: Colors.white.withValues(alpha: 0.1))
+                    : null,
               ),
               child: Text(
                 (isGraded ? l10n.editAction : l10n.gradeAction).toUpperCase(),
@@ -340,12 +420,18 @@ class _SubmissionCard extends StatelessWidget {
 
   Color _getGradeColor(int grade) {
     switch (grade) {
-      case 5: return TeacherAppColors.grade5;
-      case 4: return TeacherAppColors.grade4;
-      case 3: return TeacherAppColors.grade3;
-      case 2: return TeacherAppColors.grade2;
-      case 1: return TeacherAppColors.grade1;
-      default: return TeacherAppColors.textSecondary;
+      case 5:
+        return TeacherAppColors.grade5;
+      case 4:
+        return TeacherAppColors.grade4;
+      case 3:
+        return TeacherAppColors.grade3;
+      case 2:
+        return TeacherAppColors.grade2;
+      case 1:
+        return TeacherAppColors.grade1;
+      default:
+        return TeacherAppColors.textSecondary;
     }
   }
 }
@@ -368,11 +454,13 @@ class _AvatarSmall extends StatelessWidget {
       child: Center(
         child: Text(
           name.isNotEmpty ? name[0].toUpperCase() : 'S',
-          style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.w900, fontSize: 16),
+          style: TextStyle(
+            color: colorScheme.primary,
+            fontWeight: FontWeight.w900,
+            fontSize: 16,
+          ),
         ),
       ),
     );
-  }
-}
   }
 }

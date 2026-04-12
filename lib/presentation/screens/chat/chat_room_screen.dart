@@ -1,12 +1,11 @@
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/chat_provider.dart';
-import '../../common/page_background.dart';
-import '../../common/animated_pressable.dart';
-import '../../common/premium_card.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/animated_pressable.dart';
 import '../../widgets/app_feedback.dart';
 import 'dart:ui';
 
@@ -44,8 +43,6 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final messagesAsync = ref.watch(chatMessagesProvider(widget.userId));
     final myId = ref.watch(authControllerProvider).user?.id ?? 0;
 
@@ -53,7 +50,10 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text(widget.userName, style: const TextStyle(fontWeight: FontWeight.w900)),
+          title: Text(
+            widget.userName,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
@@ -88,7 +88,8 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                 loading: () => const AppLoadingView(),
                 error: (err, st) => AppErrorView(
                   message: ApiErrorHandler.readableMessage(err),
-                  onRetry: () => ref.invalidate(chatMessagesProvider(widget.userId)),
+                  onRetry: () =>
+                      ref.invalidate(chatMessagesProvider(widget.userId)),
                 ),
               ),
             ),
@@ -125,7 +126,10 @@ class _MessageBubble extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: isMe
               ? LinearGradient(
-                  colors: [colorScheme.primary, colorScheme.primary.withValues(alpha: 0.8)],
+                  colors: [
+                    colorScheme.primary,
+                    colorScheme.primary.withValues(alpha: 0.8),
+                  ],
                 )
               : null,
           color: isMe ? null : Colors.white.withValues(alpha: 0.1),
@@ -133,14 +137,16 @@ class _MessageBubble extends StatelessWidget {
             bottomRight: isMe ? const Radius.circular(4) : null,
             bottomLeft: !isMe ? const Radius.circular(4) : null,
           ),
-          border: isMe ? null : Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: isMe
+              ? null
+              : Border.all(color: Colors.white.withValues(alpha: 0.1)),
           boxShadow: isMe
               ? [
                   BoxShadow(
                     color: colorScheme.primary.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
-                  )
+                  ),
                 ]
               : null,
         ),
@@ -203,12 +209,19 @@ class _ChatInputBar extends StatelessWidget {
                 Expanded(
                   child: TextField(
                     controller: controller,
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
                     decoration: InputDecoration(
                       hintText: l10n.sendMessagePlaceholder,
-                      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
+                      hintStyle: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.3),
+                      ),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                      ),
                     ),
                     textInputAction: TextInputAction.send,
                     onSubmitted: (_) => onSend(),
@@ -225,7 +238,11 @@ class _ChatInputBar extends StatelessWidget {
                       ),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+                    child: const Icon(
+                      Icons.send_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                   ),
                 ),
               ],

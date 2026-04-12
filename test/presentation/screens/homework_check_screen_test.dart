@@ -35,8 +35,11 @@ void main() {
 
     expect(find.text('Algebra'), findsOneWidget);
     expect(find.text('Azizbek'), findsOneWidget);
-    expect(find.text(l10n.homeworkStatusLabel('submitted')), findsOneWidget);
+    expect(
+      find.text(l10n.homeworkStatusLabel('pending').toUpperCase()),
+      findsOneWidget,
+    );
     expect(find.text(l10n.homeworkViewFileAction), findsOneWidget);
-    expect(find.text(l10n.gradeAction), findsOneWidget);
+    expect(find.text(l10n.gradeAction.toUpperCase()), findsOneWidget);
   });
 }

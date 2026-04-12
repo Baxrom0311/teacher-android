@@ -1,9 +1,11 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teacher_school_app/core/storage/shared_prefs_service.dart';
 import 'package:teacher_school_app/data/repositories/auth_repository.dart';
 import 'package:teacher_school_app/data/repositories/notification_repository.dart';
+import 'package:teacher_school_app/l10n/app_localizations.dart';
 import 'package:teacher_school_app/presentation/providers/auth_provider.dart';
 import 'package:teacher_school_app/presentation/screens/auth/login_screen.dart';
 
@@ -21,6 +23,7 @@ void main() {
   });
 
   testWidgets('login screen renders localized form', (tester) async {
+    final l10n = lookupAppLocalizations(const Locale('uz'));
     final authRepository = MockAuthRepository();
     final notificationRepository = MockNotificationRepository();
 
@@ -38,9 +41,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Teacher Portal'), findsOneWidget);
-    expect(find.text('Login'), findsOneWidget);
-    expect(find.text('Parol'), findsOneWidget);
-    expect(find.text('Kirish'), findsOneWidget);
+    expect(find.text(l10n.teacherPortal), findsOneWidget);
+    expect(find.text(l10n.usernameLabel), findsOneWidget);
+    expect(find.text(l10n.passwordLabel), findsOneWidget);
+    expect(find.text(l10n.signIn.toUpperCase()), findsOneWidget);
   });
 }

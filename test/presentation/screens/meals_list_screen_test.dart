@@ -32,14 +32,16 @@ void main() {
         overrides: [mealsIndexProvider.overrideWith((ref) => response)],
       ),
     );
-    await tester.pump();
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text(l10n.mealsReportTitle), findsOneWidget);
-    expect(find.text(l10n.mealsDateLabel('2026-04-06')), findsOneWidget);
-    expect(find.text(l10n.mealsNameLabel), findsOneWidget);
-    expect(find.text(l10n.mealsRecipeLabel), findsOneWidget);
-    expect(find.text(l10n.mealsImagesLabel), findsOneWidget);
+    expect(
+      find.text(l10n.mealsDateLabel('2026-04-06').toUpperCase()),
+      findsOneWidget,
+    );
+    expect(find.text(l10n.mealsNameLabel.toUpperCase()), findsOneWidget);
+    expect(find.text(l10n.mealsRecipeLabel.toUpperCase()), findsOneWidget);
+    expect(find.text(l10n.mealsImagesLabel.toUpperCase()), findsOneWidget);
     expect(find.text(l10n.mealsSaveAction), findsOneWidget);
     expect(find.text('Sho\'rva'), findsOneWidget);
     expect(find.text(l10n.mealTypeLabel('breakfast')), findsOneWidget);

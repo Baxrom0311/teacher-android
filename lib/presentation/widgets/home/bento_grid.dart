@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/constants/app_colors.dart';
-import '../../core/constants/app_routes.dart';
+import 'package:teacher_school_app/core/localization/l10n_extension.dart';
+
+import '../../../core/constants/app_routes.dart';
 import '../common/premium_card.dart';
 import '../common/animated_pressable.dart';
-import 'package:teacher_school_app/l10n/app_localizations.dart';
 
 class BentoGrid extends StatelessWidget {
   const BentoGrid({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final l10n = context.l10n;
 
     return Column(
       children: [
@@ -26,7 +24,7 @@ class BentoGrid extends StatelessWidget {
                 title: l10n.dashboardAttendanceAction,
                 subtitle: 'Bugungi davomat',
                 icon: Icons.assignment_turned_in,
-                color: Color(0xFF6366F1), // Indigo
+                color: const Color(0xFF0EA5E9),
                 onTap: () => context.push(TeacherRoutes.attendanceCreate),
                 isLarge: true,
               ),
@@ -38,7 +36,7 @@ class BentoGrid extends StatelessWidget {
                 title: l10n.dashboardExcusesAction,
                 subtitle: 'Sababli',
                 icon: Icons.fact_check_outlined,
-                color: Color(0xFFF43F5E), // Rose
+                color: const Color(0xFFF43F5E),
                 onTap: () => context.push(TeacherRoutes.absenceReview),
               ),
             ),
@@ -53,7 +51,7 @@ class BentoGrid extends StatelessWidget {
               child: _BentoItem(
                 title: l10n.dashboardHomeworkAction,
                 icon: Icons.home_work_outlined,
-                color: Color(0xFF10B981), // Emerald
+                color: const Color(0xFF10B981),
                 onTap: () => context.push(TeacherRoutes.homeworkList),
               ),
             ),
@@ -62,7 +60,7 @@ class BentoGrid extends StatelessWidget {
               child: _BentoItem(
                 title: l10n.dashboardConferencesAction,
                 icon: Icons.people_alt_outlined,
-                color: Color(0xFF8B5CF6), // Violet
+                color: const Color(0xFF38BDF8),
                 onTap: () => context.push(TeacherRoutes.conferencesManage),
               ),
             ),
@@ -78,7 +76,7 @@ class BentoGrid extends StatelessWidget {
               child: _BentoItem(
                 title: l10n.dashboardSubjectsAction,
                 icon: Icons.auto_stories_outlined,
-                color: Color(0xFFF59E0B), // Amber
+                color: const Color(0xFFF59E0B),
                 onTap: () => context.push(TeacherRoutes.subjectsList),
               ),
             ),
@@ -89,7 +87,7 @@ class BentoGrid extends StatelessWidget {
                 title: l10n.dashboardAssessmentsAction,
                 subtitle: 'Baholash sistemasi',
                 icon: Icons.fact_check_outlined,
-                color: Color(0xFF0EA5E9), // Sky
+                color: const Color(0xFF0284C7),
                 onTap: () => context.push(TeacherRoutes.assessmentsList),
                 isHorizontal: true,
               ),
@@ -130,34 +128,38 @@ class _BentoItem extends StatelessWidget {
       child: PremiumCard(
         padding: EdgeInsets.zero,
         borderRadius: 24,
-        color:
-            isDark
-                ? color.withValues(alpha: 0.1)
-                : color.withValues(alpha: 0.05),
+        color: isDark
+            ? color.withValues(alpha: 0.1)
+            : color.withValues(alpha: 0.05),
         border: Border.all(
           color: color.withValues(alpha: isDark ? 0.2 : 0.1),
           width: 1.5,
         ),
         child: Container(
           padding: const EdgeInsets.all(20),
-          height: isLarge ? 180 : 120,
-          child:
-              isHorizontal
-                  ? Row(
-                    children: [
-                      _IconBox(icon: icon, color: color),
-                      const SizedBox(width: 16),
-                      Expanded(child: _TextColumn(title: title, subtitle: subtitle, color: color)),
-                    ],
-                  )
-                  : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _IconBox(icon: icon, color: color),
-                      _TextColumn(title: title, subtitle: subtitle, color: color),
-                    ],
-                  ),
+          height: isLarge ? 180 : 136,
+          child: isHorizontal
+              ? Row(
+                  children: [
+                    _IconBox(icon: icon, color: color),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _TextColumn(
+                        title: title,
+                        subtitle: subtitle,
+                        color: color,
+                      ),
+                    ),
+                  ],
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _IconBox(icon: icon, color: color),
+                    _TextColumn(title: title, subtitle: subtitle, color: color),
+                  ],
+                ),
         ),
       ),
     );
@@ -211,7 +213,9 @@ class _TextColumn extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ],

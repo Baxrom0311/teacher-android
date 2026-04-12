@@ -1,11 +1,13 @@
+import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../providers/notification_provider.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
+import '../../widgets/common/animated_pressable.dart';
 import '../../widgets/app_feedback.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
@@ -44,7 +46,10 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text(l10n.notificationsCenterTitle, style: const TextStyle(fontWeight: FontWeight.w900)),
+          title: Text(
+            l10n.notificationsCenterTitle,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
@@ -75,7 +80,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               onRefresh: _refresh,
               color: colorScheme.primary,
               child: ListView.builder(
-                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
                 itemCount: data.notifications.length,
                 itemBuilder: (context, index) {
@@ -84,7 +91,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                     padding: const EdgeInsets.only(bottom: 12),
                     child: _NotificationItem(
                       notification: notification,
-                      onTap: () => _markAsRead(notification.id, notification.isRead),
+                      onTap: () =>
+                          _markAsRead(notification.id, notification.isRead),
                     ),
                   );
                 },
@@ -144,9 +152,13 @@ class _NotificationItem extends StatelessWidget {
                         child: Text(
                           notification.title,
                           style: TextStyle(
-                            fontWeight: isRead ? FontWeight.w700 : FontWeight.w900,
+                            fontWeight: isRead
+                                ? FontWeight.w700
+                                : FontWeight.w900,
                             fontSize: 16,
-                            color: isRead ? colorScheme.onSurface.withValues(alpha: 0.7) : colorScheme.onSurface,
+                            color: isRead
+                                ? colorScheme.onSurface.withValues(alpha: 0.7)
+                                : colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -159,9 +171,11 @@ class _NotificationItem extends StatelessWidget {
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: colorScheme.primary.withValues(alpha: 0.4),
+                                color: colorScheme.primary.withValues(
+                                  alpha: 0.4,
+                                ),
                                 blurRadius: 4,
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -171,7 +185,9 @@ class _NotificationItem extends StatelessWidget {
                   Text(
                     notification.body,
                     style: TextStyle(
-                      color: colorScheme.onSurface.withValues(alpha: isRead ? 0.4 : 0.7),
+                      color: colorScheme.onSurface.withValues(
+                        alpha: isRead ? 0.4 : 0.7,
+                      ),
                       fontSize: 14,
                       fontWeight: isRead ? FontWeight.w500 : FontWeight.w600,
                     ),
@@ -194,9 +210,15 @@ class _NotificationItem extends StatelessWidget {
     );
   }
 
-  (IconData, Color) _getNotificationTheme(String type, ColorScheme colorScheme) {
+  (IconData, Color) _getNotificationTheme(
+    String type,
+    ColorScheme colorScheme,
+  ) {
     return switch (type) {
-      'payment' => (Icons.account_balance_wallet_rounded, Colors.emerald),
+      'payment' => (
+        Icons.account_balance_wallet_rounded,
+        TeacherAppColors.success,
+      ),
       'grade' => (Icons.stars_rounded, Colors.amber),
       'attendance' => (Icons.person_off_rounded, Colors.orange),
       'assignment' => (Icons.assignment_rounded, Colors.indigo),

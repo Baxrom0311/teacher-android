@@ -1,5 +1,7 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:teacher_school_app/l10n/app_localizations.dart';
 
 import 'package:teacher_school_app/data/repositories/homework_repository.dart';
 import 'package:teacher_school_app/presentation/providers/homework_provider.dart';
@@ -11,6 +13,8 @@ class MockHomeworkRepository extends Mock implements HomeworkRepository {}
 
 void main() {
   testWidgets('homework create screen renders localized form', (tester) async {
+    final l10n = lookupAppLocalizations(const Locale('uz'));
+
     await tester.pumpWidget(
       buildTestApp(
         const HomeworkCreateScreen(sessionId: 12),
@@ -23,11 +27,14 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Yangi vazifa'), findsOneWidget);
-    expect(find.text('Sarlavha'), findsOneWidget);
-    expect(find.text('Tavsif'), findsOneWidget);
-    expect(find.text('Topshirish muddati (ixtiyoriy)'), findsOneWidget);
-    expect(find.text('Muddatni tanlang'), findsOneWidget);
-    expect(find.text('Saqlash'), findsOneWidget);
+    expect(find.text(l10n.homeworkCreateTitle), findsOneWidget);
+    expect(find.text(l10n.homeworkTitleLabel.toUpperCase()), findsOneWidget);
+    expect(
+      find.text(l10n.homeworkDescriptionTitle.toUpperCase()),
+      findsOneWidget,
+    );
+    expect(find.text(l10n.homeworkDueDateTitle.toUpperCase()), findsOneWidget);
+    expect(find.text(l10n.homeworkSelectDueDate), findsOneWidget);
+    expect(find.text(l10n.saveAction.toUpperCase()), findsOneWidget);
   });
 }

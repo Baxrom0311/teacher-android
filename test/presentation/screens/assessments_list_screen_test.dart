@@ -44,7 +44,10 @@ void main() {
 
     expect(find.text(l10n.assessmentsListTitle), findsOneWidget);
     expect(find.text('Algebra nazorati'), findsOneWidget);
-    expect(find.text(l10n.assessmentTypeLabelText('exam')), findsOneWidget);
+    expect(
+      find.text(l10n.assessmentTypeLabelText('exam').toUpperCase()),
+      findsOneWidget,
+    );
     expect(find.text(l10n.assessmentMaxScoreText(100)), findsOneWidget);
     expect(find.text(l10n.assessmentWeightText(20)), findsOneWidget);
   });
@@ -81,7 +84,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text(l10n.assessmentTypeLabelText('exam')), findsOneWidget);
+      expect(
+        find.text(l10n.assessmentTypeLabelText('exam').toUpperCase()),
+        findsOneWidget,
+      );
       expect(find.text(l10n.assessmentFallbackTitle), findsOneWidget);
       expect(find.text(l10n.unknownSubjectFallback), findsOneWidget);
     },

@@ -1,5 +1,7 @@
+import 'package:flutter/widgets.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:teacher_school_app/l10n/app_localizations.dart';
 
 import 'package:teacher_school_app/data/models/assessment_model.dart';
 import 'package:teacher_school_app/data/repositories/assessment_repository.dart';
@@ -14,6 +16,7 @@ void main() {
   testWidgets('assessment results screen renders localized labels', (
     tester,
   ) async {
+    final l10n = lookupAppLocalizations(const Locale('uz'));
     final payload = {
       'assessment': Assessment(
         id: 1,
@@ -50,8 +53,11 @@ void main() {
 
     expect(find.text('Algebra'), findsOneWidget);
     expect(find.text('Aziza'), findsOneWidget);
-    expect(find.text('Ball:'), findsOneWidget);
-    expect(find.text('Izoh:'), findsOneWidget);
-    expect(find.text('Saqlash'), findsOneWidget);
+    expect(find.text(l10n.assessmentScoreLabel.toUpperCase()), findsOneWidget);
+    expect(
+      find.text(l10n.assessmentCommentLabel.toUpperCase()),
+      findsOneWidget,
+    );
+    expect(find.text(l10n.saveAction), findsOneWidget);
   });
 }

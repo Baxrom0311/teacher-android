@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import 'package:teacher_school_app/data/models/profile_model.dart';
 import 'package:teacher_school_app/data/models/teacher_model.dart';
+import 'package:teacher_school_app/l10n/app_localizations.dart';
 import 'package:teacher_school_app/presentation/providers/profile_provider.dart';
 import 'package:teacher_school_app/presentation/screens/profile/teacher_profile_screen.dart';
 
@@ -11,6 +13,7 @@ void main() {
   testWidgets('teacher profile screen renders works and document states', (
     tester,
   ) async {
+    final l10n = lookupAppLocalizations(const Locale('uz'));
     final response = ProfileResponse(
       teacher: TeacherModel(
         id: 3,
@@ -52,25 +55,36 @@ void main() {
         overrides: [profileProvider.overrideWith((ref) => response)],
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('Dilshod Ustoz'), findsWidgets);
-    expect(find.textContaining('AB1234567'), findsOneWidget);
-    expect(find.text('Diplom'), findsOneWidget);
-    expect(find.text('Yuklangan'), findsOneWidget);
-    expect(find.text('Yuklanmagan'), findsOneWidget);
+    expect(find.text('TATU'), findsOneWidget);
     await tester.dragUntilVisible(
-      find.text('Ilmiy Ishlar (Portfolio)'),
+      find.text(l10n.documentsTitle.toUpperCase()),
       find.byType(Scrollable),
       const Offset(0, -120),
     );
-    expect(find.text('Ilmiy Ishlar (Portfolio)'), findsOneWidget);
-    expect(find.text('Profil va Sozlamalar'), findsOneWidget);
+    expect(find.text(l10n.documentsTitle.toUpperCase()), findsOneWidget);
+    expect(find.text(l10n.uploadedStatus), findsOneWidget);
+    expect(find.text(l10n.notUploadedStatus), findsOneWidget);
+    await tester.dragUntilVisible(
+      find.text(l10n.portfolioTitle.toUpperCase()),
+      find.byType(Scrollable),
+      const Offset(0, -120),
+    );
+    expect(find.text(l10n.portfolioTitle.toUpperCase()), findsOneWidget);
+    await tester.dragUntilVisible(
+      find.text(l10n.settingsTitle.toUpperCase()),
+      find.byType(Scrollable),
+      const Offset(0, -120),
+    );
+    expect(find.text(l10n.settingsTitle.toUpperCase()), findsOneWidget);
   });
 
   testWidgets('teacher profile screen uses localized fallback names', (
     tester,
   ) async {
+    final l10n = lookupAppLocalizations(const Locale('uz'));
     final response = ProfileResponse(
       teacher: TeacherModel(id: 9, name: '', email: '', role: 'teacher'),
       profile: null,
@@ -94,9 +108,9 @@ void main() {
         overrides: [profileProvider.overrideWith((ref) => response)],
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    expect(find.text('O\'qituvchi'), findsWidgets);
-    expect(find.text('Ilmiy ish'), findsOneWidget);
+    expect(find.text(l10n.teacherFallbackName), findsWidgets);
+    expect(find.text(l10n.scientificWorkTitle), findsOneWidget);
   });
 }

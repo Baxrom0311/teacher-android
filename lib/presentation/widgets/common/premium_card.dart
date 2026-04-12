@@ -1,6 +1,8 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import '../../core/constants/liquid_glass.dart';
+
+import '../../../core/constants/liquid_glass.dart';
 
 class PremiumCard extends StatelessWidget {
   final Widget child;
@@ -19,8 +21,8 @@ class PremiumCard extends StatelessWidget {
     this.width,
     this.height,
     this.padding,
-    this.borderRadius = 24,
-    this.useGlass = false,
+    this.borderRadius = 32,
+    this.useGlass = true,
     this.color,
     this.shadows,
     this.border,
@@ -49,9 +51,12 @@ class PremiumCard extends StatelessWidget {
             child: Container(
               padding: padding ?? const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: cardColor.withValues(alpha: LiquidGlass.opacity),
+                color: cardColor.withValues(
+                  alpha: LiquidGlass.opacity(context),
+                ),
                 borderRadius: BorderRadius.circular(borderRadius),
-                border: border ??
+                border:
+                    border ??
                     Border.all(
                       color: cardColor.withValues(
                         alpha: LiquidGlass.borderOpacity,
@@ -73,9 +78,10 @@ class PremiumCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(borderRadius),
-        border: border ??
+        border:
+            border ??
             Border.all(
-              color: theme.colorScheme.outline.withValues(alpha: 0.1),
+              color: theme.colorScheme.outline.withValues(alpha: 0.18),
               width: 1,
             ),
         boxShadow: shadows ?? LiquidGlass.shadows,

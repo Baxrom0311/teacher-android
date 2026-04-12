@@ -1,21 +1,20 @@
 import 'dart:async';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../../data/models/profile_model.dart';
-import '../../common/animated_pressable.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
+import '../../widgets/common/animated_pressable.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/profile_provider.dart';
-import '../../widgets/app_feedback.dart';
 
 class PortfolioWorkCreateScreen extends ConsumerStatefulWidget {
   const PortfolioWorkCreateScreen({super.key});
@@ -199,7 +198,10 @@ class _PortfolioWorkCreateScreenState
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text(l10n.portfolioCreateTitle, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+          title: Text(
+            l10n.portfolioCreateTitle,
+            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+          ),
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
@@ -214,14 +216,26 @@ class _PortfolioWorkCreateScreenState
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    _buildTextField(l10n.portfolioWorkTitleLabel, _titleController, Icons.title_rounded),
+                    _buildTextField(
+                      l10n.portfolioWorkTitleLabel,
+                      _titleController,
+                      Icons.title_rounded,
+                    ),
                     const SizedBox(height: 20),
-                    _buildTextField(l10n.portfolioPublishedPlaceLabel, _publishedPlaceController, Icons.location_on_rounded),
+                    _buildTextField(
+                      l10n.portfolioPublishedPlaceLabel,
+                      _publishedPlaceController,
+                      Icons.location_on_rounded,
+                    ),
                     const SizedBox(height: 20),
                     GestureDetector(
                       onTap: _pickPublishedAt,
                       child: AbsorbPointer(
-                        child: _buildTextField(l10n.portfolioPublishedDateLabel, TextEditingController(text: _publishedAt ?? ''), Icons.calendar_today_rounded),
+                        child: _buildTextField(
+                          l10n.portfolioPublishedDateLabel,
+                          TextEditingController(text: _publishedAt ?? ''),
+                          Icons.calendar_today_rounded,
+                        ),
                       ),
                     ),
                   ],
@@ -234,15 +248,30 @@ class _PortfolioWorkCreateScreenState
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    _buildTextField(l10n.portfolioCoauthorSearchHint, _coauthorSearchController, Icons.search_rounded, onChanged: _searchCoauthors),
+                    _buildTextField(
+                      l10n.portfolioCoauthorSearchHint,
+                      _coauthorSearchController,
+                      Icons.search_rounded,
+                      onChanged: _searchCoauthors,
+                    ),
                     if (_isSearchingCoauthors)
-                      const Padding(padding: EdgeInsets.only(top: 12), child: LinearProgressIndicator()),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 12),
+                        child: LinearProgressIndicator(),
+                      ),
                     if (_selectedCoauthors.isNotEmpty) ...[
                       const SizedBox(height: 16),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: _selectedCoauthors.map((teacher) => _CoauthorChip(name: teacher.name, onDelete: () => _removeCoauthor(teacher.id))).toList(),
+                        children: _selectedCoauthors
+                            .map(
+                              (teacher) => _CoauthorChip(
+                                name: teacher.name,
+                                onDelete: () => _removeCoauthor(teacher.id),
+                              ),
+                            )
+                            .toList(),
                       ),
                     ],
                   ],
@@ -250,30 +279,67 @@ class _PortfolioWorkCreateScreenState
               ),
               if (_coauthorResults.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                ..._coauthorResults.map((teacher) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: PremiumCard(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(color: colorScheme.primary.withValues(alpha: 0.1), shape: BoxShape.circle),
-                        child: Icon(Icons.person_add_rounded, color: colorScheme.primary, size: 20),
+                ..._coauthorResults.map(
+                  (teacher) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: PremiumCard(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
                       ),
-                      title: Text(teacher.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
-                      subtitle: Text(teacher.email ?? teacher.phone ?? '', style: TextStyle(fontSize: 12, color: colorScheme.onSurface.withValues(alpha: 0.4))),
-                      trailing: AnimatedPressable(
-                        onTap: () => _addCoauthor(teacher),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(color: colorScheme.primary, borderRadius: BorderRadius.circular(8)),
-                          child: Text(l10n.addAction, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12)),
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primary.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.person_add_rounded,
+                            color: colorScheme.primary,
+                            size: 20,
+                          ),
+                        ),
+                        title: Text(
+                          teacher.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                          ),
+                        ),
+                        subtitle: Text(
+                          teacher.email ?? teacher.phone ?? '',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: colorScheme.onSurface.withValues(alpha: 0.4),
+                          ),
+                        ),
+                        trailing: AnimatedPressable(
+                          onTap: () => _addCoauthor(teacher),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorScheme.primary,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              l10n.addAction,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                )),
+                ),
               ],
               const SizedBox(height: 24),
               _SectionHeader(title: l10n.pdfOnlyFileLabel),
@@ -283,7 +349,9 @@ class _PortfolioWorkCreateScreenState
                 currentFileLabel: _filePath?.split('/').last,
                 icon: Icons.picture_as_pdf_rounded,
                 onPick: _pickFile,
-                onClear: _filePath == null ? null : () => setState(() => _filePath = null),
+                onClear: _filePath == null
+                    ? null
+                    : () => setState(() => _filePath = null),
               ),
               const SizedBox(height: 40),
               AnimatedPressable(
@@ -291,14 +359,37 @@ class _PortfolioWorkCreateScreenState
                 child: Container(
                   height: 56,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [colorScheme.primary, colorScheme.secondary]),
+                    gradient: LinearGradient(
+                      colors: [colorScheme.primary, colorScheme.secondary],
+                    ),
                     borderRadius: BorderRadius.circular(18),
-                    boxShadow: [BoxShadow(color: colorScheme.primary.withValues(alpha: 0.3), blurRadius: 15, offset: const Offset(0, 8))],
+                    boxShadow: [
+                      BoxShadow(
+                        color: colorScheme.primary.withValues(alpha: 0.3),
+                        blurRadius: 15,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
                   ),
                   child: Center(
                     child: isLoading
-                        ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 3, color: Colors.white))
-                        : Text(l10n.saveAction.toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 1.5)),
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            l10n.saveAction.toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 14,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
                   ),
                 ),
               ),
@@ -309,7 +400,12 @@ class _PortfolioWorkCreateScreenState
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, IconData icon, {void Function(String)? onChanged}) {
+  Widget _buildTextField(
+    String label,
+    TextEditingController controller,
+    IconData icon, {
+    void Function(String)? onChanged,
+  }) {
     final colorScheme = Theme.of(context).colorScheme;
     return TextField(
       controller: controller,
@@ -317,17 +413,35 @@ class _PortfolioWorkCreateScreenState
       style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.5), fontWeight: FontWeight.w600),
-        prefixIcon: Icon(icon, color: colorScheme.primary.withValues(alpha: 0.7)),
+        labelStyle: TextStyle(
+          color: colorScheme.onSurface.withValues(alpha: 0.5),
+          fontWeight: FontWeight.w600,
+        ),
+        prefixIcon: Icon(
+          icon,
+          color: colorScheme.primary.withValues(alpha: 0.7),
+        ),
         filled: true,
         fillColor: Colors.white.withValues(alpha: 0.05),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
       ),
     );
   }
 
-  Widget _buildUploadCard({required String title, required IconData icon, required VoidCallback onPick, required VoidCallback? onClear, String? currentFileLabel}) {
+  Widget _buildUploadCard({
+    required String title,
+    required IconData icon,
+    required VoidCallback onPick,
+    required VoidCallback? onClear,
+    String? currentFileLabel,
+  }) {
     final l10n = context.l10n;
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -337,7 +451,10 @@ class _PortfolioWorkCreateScreenState
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: colorScheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(
+              color: colorScheme.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Icon(icon, color: colorScheme.primary, size: 20),
           ),
           const SizedBox(width: 14),
@@ -345,19 +462,39 @@ class _PortfolioWorkCreateScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 15,
+                  ),
+                ),
                 const SizedBox(height: 2),
                 Text(
                   currentFileLabel ?? l10n.documentNotSelected,
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: colorScheme.onSurface.withValues(alpha: 0.4)),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurface.withValues(alpha: 0.4),
+                  ),
                 ),
               ],
             ),
           ),
           if (onClear != null)
-            IconButton(onPressed: onClear, icon: const Icon(Icons.close_rounded, size: 20))
+            IconButton(
+              onPressed: onClear,
+              icon: const Icon(Icons.close_rounded, size: 20),
+            )
           else
-            IconButton(onPressed: onPick, icon: const Icon(Icons.file_upload_outlined, size: 20, color: Colors.white)),
+            IconButton(
+              onPressed: onPick,
+              icon: const Icon(
+                Icons.file_upload_outlined,
+                size: 20,
+                color: Colors.white,
+              ),
+            ),
         ],
       ),
     );
@@ -403,7 +540,14 @@ class _CoauthorChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(name, style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.w800, fontSize: 13)),
+          Text(
+            name,
+            style: TextStyle(
+              color: colorScheme.primary,
+              fontWeight: FontWeight.w800,
+              fontSize: 13,
+            ),
+          ),
           const SizedBox(width: 4),
           IconButton(
             onPressed: onDelete,

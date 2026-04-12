@@ -1,12 +1,13 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../providers/attendance_provider.dart';
 import '../../widgets/app_feedback.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
+import '../../widgets/common/animated_pressable.dart';
 
 class AbsenceReviewScreen extends ConsumerStatefulWidget {
   const AbsenceReviewScreen({super.key});
@@ -22,15 +23,16 @@ class _AbsenceReviewScreenState extends ConsumerState<AbsenceReviewScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final excusesAsync = ref.watch(absenceExcusesProvider(_selectedStatus));
 
     return PageBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text(l10n.absenceReviewTitle, style: const TextStyle(fontWeight: FontWeight.w900)),
+          title: Text(
+            l10n.absenceReviewTitle,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
@@ -82,7 +84,8 @@ class _AbsenceReviewScreenState extends ConsumerState<AbsenceReviewScreen> {
                             child: _AbsenceExcuseCard(
                               excuse: excuse,
                               selectedStatus: _selectedStatus,
-                              onReview: (status) => _review(excuse['id'], status),
+                              onReview: (status) =>
+                                  _review(excuse['id'], status),
                             ),
                           );
                         },
@@ -91,7 +94,8 @@ class _AbsenceReviewScreenState extends ConsumerState<AbsenceReviewScreen> {
                 error: (err, stack) => AppErrorView(
                   message: ApiErrorHandler.readableMessage(err),
                   icon: Icons.fact_check_rounded,
-                  onRetry: () => ref.invalidate(absenceExcusesProvider(_selectedStatus)),
+                  onRetry: () =>
+                      ref.invalidate(absenceExcusesProvider(_selectedStatus)),
                 ),
               ),
             ),
@@ -146,7 +150,9 @@ class _StatusSegment extends StatelessWidget {
                 : Colors.white.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? color.withValues(alpha: 0.3) : Colors.transparent,
+              color: isSelected
+                  ? color.withValues(alpha: 0.3)
+                  : Colors.transparent,
             ),
           ),
           child: Text(
@@ -193,7 +199,11 @@ class _AbsenceExcuseCard extends StatelessWidget {
                   color: colorScheme.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.person_search_rounded, color: colorScheme.primary, size: 20),
+                child: Icon(
+                  Icons.person_search_rounded,
+                  color: colorScheme.primary,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -202,7 +212,10 @@ class _AbsenceExcuseCard extends StatelessWidget {
                   children: [
                     Text(
                       excuse['student']['name'],
-                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                      ),
                     ),
                     Text(
                       excuse['excuse_date'] ?? '',
@@ -268,7 +281,11 @@ class _AbsenceExcuseCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: TeacherAppColors.success.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: TeacherAppColors.success.withValues(alpha: 0.2)),
+                        border: Border.all(
+                          color: TeacherAppColors.success.withValues(
+                            alpha: 0.2,
+                          ),
+                        ),
                       ),
                       child: Text(
                         l10n.approveAction.toUpperCase(),

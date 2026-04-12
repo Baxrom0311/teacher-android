@@ -1,5 +1,4 @@
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,10 +7,9 @@ import 'package:go_router/go_router.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../providers/homework_provider.dart';
 import '../../providers/lesson_provider.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
-import '../../widgets/app_feedback.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
+import '../../widgets/common/animated_pressable.dart';
 
 class HomeworkCreateScreen extends ConsumerStatefulWidget {
   final int sessionId;
@@ -97,7 +95,10 @@ class _HomeworkCreateScreenState extends ConsumerState<HomeworkCreateScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text(l10n.homeworkCreateTitle, style: const TextStyle(fontWeight: FontWeight.w900)),
+          title: Text(
+            l10n.homeworkCreateTitle,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
@@ -142,7 +143,9 @@ class _HomeworkCreateScreenState extends ConsumerState<HomeworkCreateScreen> {
                       final date = await showDatePicker(
                         context: context,
                         locale: Locale(l10n.appLocale.name),
-                        initialDate: DateTime.now().add(const Duration(days: 1)),
+                        initialDate: DateTime.now().add(
+                          const Duration(days: 1),
+                        ),
                         firstDate: DateTime.now(),
                         lastDate: DateTime.now().add(const Duration(days: 365)),
                       );
@@ -156,7 +159,9 @@ class _HomeworkCreateScreenState extends ConsumerState<HomeworkCreateScreen> {
                         color: Colors.white.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: _dueDate != null ? colorScheme.primary.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.1),
+                          color: _dueDate != null
+                              ? colorScheme.primary.withValues(alpha: 0.3)
+                              : Colors.white.withValues(alpha: 0.1),
                         ),
                       ),
                       child: Row(
@@ -164,15 +169,23 @@ class _HomeworkCreateScreenState extends ConsumerState<HomeworkCreateScreen> {
                           Icon(
                             Icons.calendar_today_rounded,
                             size: 20,
-                            color: _dueDate != null ? colorScheme.primary : colorScheme.onSurface.withValues(alpha: 0.3),
+                            color: _dueDate != null
+                                ? colorScheme.primary
+                                : colorScheme.onSurface.withValues(alpha: 0.3),
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            _dueDate != null ? DateFormat('yyyy-MM-dd').format(_dueDate!) : l10n.homeworkSelectDueDate,
+                            _dueDate != null
+                                ? DateFormat('yyyy-MM-dd').format(_dueDate!)
+                                : l10n.homeworkSelectDueDate,
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
-                              color: _dueDate != null ? colorScheme.onSurface : colorScheme.onSurface.withValues(alpha: 0.3),
+                              color: _dueDate != null
+                                  ? colorScheme.onSurface
+                                  : colorScheme.onSurface.withValues(
+                                      alpha: 0.3,
+                                    ),
                             ),
                           ),
                           const Spacer(),
@@ -193,22 +206,36 @@ class _HomeworkCreateScreenState extends ConsumerState<HomeworkCreateScreen> {
               child: Container(
                 height: 56,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [colorScheme.primary, colorScheme.secondary]),
+                  gradient: LinearGradient(
+                    colors: [colorScheme.primary, colorScheme.secondary],
+                  ),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
                       color: colorScheme.primary.withValues(alpha: 0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 6),
-                    )
+                    ),
                   ],
                 ),
                 child: Center(
                   child: isLoading
-                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white))
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: Colors.white,
+                          ),
+                        )
                       : Text(
                           l10n.saveAction.toUpperCase(),
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 1.5),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 14,
+                            letterSpacing: 1.5,
+                          ),
                         ),
                 ),
               ),
@@ -241,15 +268,27 @@ class _GlassTextField extends StatelessWidget {
       style: TextStyle(fontWeight: fontWeight, fontSize: 16),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3), fontWeight: FontWeight.w600),
+        hintStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+          fontWeight: FontWeight.w600,
+        ),
         filled: true,
         fillColor: Colors.white.withValues(alpha: 0.05),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4), width: 1.5),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
+            width: 1.5,
+          ),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
       ),
     );
   }

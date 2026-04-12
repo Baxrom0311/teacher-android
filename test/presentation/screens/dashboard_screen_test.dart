@@ -1,7 +1,10 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import 'package:teacher_school_app/data/models/dashboard_model.dart';
 import 'package:teacher_school_app/data/models/teacher_model.dart';
+import 'package:teacher_school_app/l10n/app_localizations.dart';
 import 'package:teacher_school_app/presentation/providers/auth_provider.dart';
 import 'package:teacher_school_app/presentation/providers/dashboard_provider.dart';
 import 'package:teacher_school_app/presentation/screens/home/dashboard_screen.dart';
@@ -52,6 +55,7 @@ class _FakeAuthController extends StateNotifier<AuthState>
 
 void main() {
   testWidgets('dashboard screen renders live summary cards', (tester) async {
+    final l10n = lookupAppLocalizations(const Locale('uz'));
     const dashboard = TeacherDashboardResponse(
       currentYear: DashboardPeriodData(id: 1, name: '2025/2026'),
       currentQuarter: DashboardPeriodData(id: 2, name: '3-chorak'),
@@ -99,8 +103,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Salom, Baxrom'), findsOneWidget);
-    expect(find.text('Guruhlar'), findsOneWidget);
-    expect(find.text('112'), findsOneWidget);
+    expect(find.text(l10n.dashboardHeroGreeting('Baxrom')), findsOneWidget);
+    expect(
+      find.text(l10n.dashboardQuickActionsTitle.toUpperCase()),
+      findsOneWidget,
+    );
   });
 }

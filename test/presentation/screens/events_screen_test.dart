@@ -1,5 +1,8 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import 'package:teacher_school_app/data/models/event_model.dart';
+import 'package:teacher_school_app/l10n/app_localizations.dart';
 import 'package:teacher_school_app/presentation/providers/event_provider.dart';
 import 'package:teacher_school_app/presentation/screens/events/events_screen.dart';
 
@@ -9,6 +12,7 @@ void main() {
   testWidgets('events screen renders event cards from provider', (
     tester,
   ) async {
+    final l10n = lookupAppLocalizations(const Locale('uz'));
     const response = EventsResponse(
       events: [
         SchoolEventData(
@@ -36,9 +40,12 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Tadbirlar'), findsOneWidget);
+    expect(find.text(l10n.eventsMenuTitle), findsOneWidget);
     expect(find.text('Fan olimpiadasi'), findsOneWidget);
-    expect(find.text('Imtihon'), findsOneWidget);
+    expect(
+      find.text(l10n.eventsTypeLabel('exam').toUpperCase()),
+      findsOneWidget,
+    );
     expect(find.text('Faollar zali'), findsOneWidget);
     expect(find.text('Hududiy bosqich'), findsOneWidget);
   });
@@ -46,6 +53,7 @@ void main() {
   testWidgets('events screen shows localized fallback title when empty', (
     tester,
   ) async {
+    final l10n = lookupAppLocalizations(const Locale('uz'));
     const response = EventsResponse(
       events: [
         SchoolEventData(
@@ -73,7 +81,10 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Tadbir'), findsOneWidget);
-    expect(find.text('Uchrashuv'), findsOneWidget);
+    expect(find.text(l10n.eventFallbackTitle), findsOneWidget);
+    expect(
+      find.text(l10n.eventsTypeLabel('meeting').toUpperCase()),
+      findsOneWidget,
+    );
   });
 }

@@ -3,17 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
 import 'package:teacher_school_app/l10n/app_localizations.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../../data/models/event_model.dart';
 import '../../providers/event_provider.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
 import '../../widgets/app_feedback.dart';
-import 'dart:ui';
 
 class EventsScreen extends ConsumerWidget {
   const EventsScreen({super.key});
@@ -39,7 +36,9 @@ class EventsScreen extends ConsumerWidget {
               displacement: 100,
               color: theme.colorScheme.primary,
               child: CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
                 slivers: [
                   SliverAppBar(
                     floating: true,
@@ -48,7 +47,10 @@ class EventsScreen extends ConsumerWidget {
                     centerTitle: true,
                     title: Text(
                       l10n.eventsMenuTitle,
-                      style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 24,
+                      ),
                     ),
                   ),
                   if (data.events.isEmpty)
@@ -63,15 +65,12 @@ class EventsScreen extends ConsumerWidget {
                     SliverPadding(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
                       sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: _EventCard(event: data.events[index]),
-                            );
-                          },
-                          childCount: data.events.length,
-                        ),
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _EventCard(event: data.events[index]),
+                          );
+                        }, childCount: data.events.length),
                       ),
                     ),
                 ],
@@ -115,7 +114,9 @@ class _EventCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  event.title.isNotEmpty ? event.title : l10n.eventFallbackTitle,
+                  event.title.isNotEmpty
+                      ? event.title
+                      : l10n.eventFallbackTitle,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
@@ -124,7 +125,10 @@ class _EventCard extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: typeColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
@@ -196,7 +200,10 @@ class _EventCard extends StatelessWidget {
   String? _formatDate(String? rawDate, AppLocalizations l10n) {
     if (rawDate == null || rawDate.isEmpty) return null;
     try {
-      return DateFormat('dd.MM.yyyy', l10n.intlLocaleTag).format(DateTime.parse(rawDate));
+      return DateFormat(
+        'dd.MM.yyyy',
+        l10n.intlLocaleTag,
+      ).format(DateTime.parse(rawDate));
     } catch (_) {
       return rawDate;
     }
@@ -204,11 +211,16 @@ class _EventCard extends StatelessWidget {
 
   Color _typeColor(String type) {
     switch (type) {
-      case 'holiday': return TeacherAppColors.success;
-      case 'exam': return TeacherAppColors.error;
-      case 'meeting': return TeacherAppColors.info;
-      case 'sport': return TeacherAppColors.warning;
-      default: return TeacherAppColors.primaryPurple;
+      case 'holiday':
+        return TeacherAppColors.success;
+      case 'exam':
+        return TeacherAppColors.error;
+      case 'meeting':
+        return TeacherAppColors.info;
+      case 'sport':
+        return TeacherAppColors.warning;
+      default:
+        return TeacherAppColors.primaryPurple;
     }
   }
 }

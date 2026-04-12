@@ -1,7 +1,9 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:teacher_school_app/data/repositories/profile_repository.dart';
+import 'package:teacher_school_app/l10n/app_localizations.dart';
 import 'package:teacher_school_app/presentation/providers/profile_provider.dart';
 import 'package:teacher_school_app/presentation/screens/profile/portfolio_work_create_screen.dart';
 
@@ -13,6 +15,7 @@ void main() {
   testWidgets('portfolio work create screen renders localized form', (
     tester,
   ) async {
+    final l10n = lookupAppLocalizations(const Locale('uz'));
     await tester.pumpWidget(
       buildTestApp(
         const PortfolioWorkCreateScreen(),
@@ -25,11 +28,14 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Ilmiy ish qo\'shish'), findsOneWidget);
-    expect(find.text('Sarlavha'), findsOneWidget);
-    expect(find.text('Nashr qilingan joy'), findsOneWidget);
-    expect(find.text('Hammuallif qidirish'), findsOneWidget);
-    expect(find.text('Fayl (faqat PDF)'), findsOneWidget);
-    expect(find.text('Saqlash'), findsOneWidget);
+    expect(find.text(l10n.portfolioCreateTitle), findsOneWidget);
+    expect(find.text(l10n.portfolioWorkTitleLabel), findsOneWidget);
+    expect(find.text(l10n.portfolioPublishedPlaceLabel), findsOneWidget);
+    expect(
+      find.text(l10n.portfolioCoauthorSearchTitle.toUpperCase()),
+      findsOneWidget,
+    );
+    expect(find.text(l10n.pdfOnlyFileLabel.toUpperCase()), findsOneWidget);
+    expect(find.text(l10n.saveAction.toUpperCase()), findsOneWidget);
   });
 }

@@ -176,6 +176,35 @@ extension AppLocalizationsHelpers on AppLocalizations {
     en: '$count active conference slots are open',
   );
 
+  String get viewAll => _pick(uz: 'Barchasi', ru: 'Все', en: 'View all');
+
+  String get settingsTitle =>
+      _pick(uz: 'Sozlamalar', ru: 'Настройки', en: 'Settings');
+
+  String get scientificWorkTitle =>
+      _pick(uz: 'Ilmiy ish', ru: 'Научная работа', en: 'Scientific work');
+
+  String get assessmentClassificationTitle =>
+      _pick(uz: 'Tasniflash', ru: 'Классификация', en: 'Classification');
+
+  String get assessmentDetailsTitle =>
+      _pick(uz: 'Tafsilotlar', ru: 'Детали', en: 'Details');
+
+  String get attendanceAllPresent => _pick(
+    uz: 'Barchasi qatnashdi',
+    ru: 'Все присутствуют',
+    en: 'Mark all present',
+  );
+
+  String get attendanceAllAbsent =>
+      _pick(uz: 'Barchasi yo`q', ru: 'Все отсутствуют', en: 'Mark all absent');
+
+  String get attendanceNoStudents => _pick(
+    uz: 'Ro`yxatda o`quvchi yo`q',
+    ru: 'В списке нет учеников',
+    en: 'No students available',
+  );
+
   String eventsTypeLabel(String eventType) {
     return switch (eventType.toLowerCase()) {
       'holiday' => eventTypeHoliday,

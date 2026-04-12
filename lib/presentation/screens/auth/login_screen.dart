@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_strings.dart';
-import '../../../core/constants/liquid_glass.dart';
 import '../../../core/localization/app_locale.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../providers/app_locale_provider.dart';
 import '../../providers/app_theme_mode_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/app_feedback.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
+import '../../widgets/common/animated_pressable.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -34,7 +33,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _submit() async {
     final authNotifier = ref.read(authControllerProvider.notifier);
-    if (authNotifier.isLoading) return;
+    if (ref.read(authControllerProvider).isLoading) return;
     if (!_formKey.currentState!.validate()) return;
 
     await authNotifier.login(
@@ -84,22 +83,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         decoration: BoxDecoration(
                           color: colorScheme.primary.withValues(alpha: 0.15),
                           shape: BoxShape.circle,
-                          border: Border.all(color: colorScheme.primary.withValues(alpha: 0.3), width: 2),
+                          border: Border.all(
+                            color: colorScheme.primary.withValues(alpha: 0.3),
+                            width: 2,
+                          ),
                         ),
-                        child: Icon(Icons.school_rounded, size: 64, color: colorScheme.primary),
+                        child: Icon(
+                          Icons.school_rounded,
+                          size: 64,
+                          color: colorScheme.primary,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 32),
                     Text(
                       l10n.teacherPortal,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -1),
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        letterSpacing: -1,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       l10n.teacherSubtitle,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, color: Colors.white.withValues(alpha: 0.6), fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white.withValues(alpha: 0.6),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     const SizedBox(height: 48),
                     PremiumCard(
@@ -110,7 +125,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           if (authState.error != null) ...[
                             AppInlineMessageCard(
                               message: authState.error!,
-                              type: authState.error == AppStrings.sessionExpired ? AppInlineMessageType.info : AppInlineMessageType.error,
+                              type: authState.error == AppStrings.sessionExpired
+                                  ? AppInlineMessageType.info
+                                  : AppInlineMessageType.error,
                             ),
                             const SizedBox(height: 20),
                           ],
@@ -119,7 +136,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             label: l10n.usernameLabel,
                             icon: Icons.person_rounded,
                             validator: (value) {
-                              if (value == null || value.trim().isEmpty) return l10n.usernameRequired;
+                              if (value == null || value.trim().isEmpty) {
+                                return l10n.usernameRequired;
+                              }
                               return null;
                             },
                           ),
@@ -130,9 +149,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             icon: Icons.lock_rounded,
                             isPassword: true,
                             isObscured: _obscurePassword,
-                            onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
+                            onToggleObscure: () => setState(
+                              () => _obscurePassword = !_obscurePassword,
+                            ),
                             validator: (value) {
-                              if (value == null || value.isEmpty) return AppStrings.passwordRequired;
+                              if (value == null || value.isEmpty) {
+                                return AppStrings.passwordRequired;
+                              }
                               return null;
                             },
                           ),
@@ -142,14 +165,42 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             child: Container(
                               height: 56,
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(colors: [colorScheme.primary, colorScheme.secondary]),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    colorScheme.primary,
+                                    colorScheme.secondary,
+                                  ],
+                                ),
                                 borderRadius: BorderRadius.circular(18),
-                                boxShadow: [BoxShadow(color: colorScheme.primary.withValues(alpha: 0.3), blurRadius: 15, offset: const Offset(0, 8))],
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: colorScheme.primary.withValues(
+                                      alpha: 0.3,
+                                    ),
+                                    blurRadius: 15,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
                               ),
                               child: Center(
                                 child: authState.isLoading
-                                    ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 3, color: Colors.white))
-                                    : Text(l10n.signIn.toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 1.5)),
+                                    ? const SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 3,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : Text(
+                                        l10n.signIn.toUpperCase(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 14,
+                                          letterSpacing: 1.5,
+                                        ),
+                                      ),
                               ),
                             ),
                           ),
@@ -183,19 +234,36 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.5), fontWeight: FontWeight.w600),
-        prefixIcon: Icon(icon, color: colorScheme.primary.withValues(alpha: 0.7)),
+        labelStyle: TextStyle(
+          color: colorScheme.onSurface.withValues(alpha: 0.5),
+          fontWeight: FontWeight.w600,
+        ),
+        prefixIcon: Icon(
+          icon,
+          color: colorScheme.primary.withValues(alpha: 0.7),
+        ),
         suffixIcon: isPassword
             ? IconButton(
-                icon: Icon(isObscured ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 20),
+                icon: Icon(
+                  isObscured
+                      ? Icons.visibility_off_rounded
+                      : Icons.visibility_rounded,
+                  size: 20,
+                ),
                 onPressed: onToggleObscure,
                 color: colorScheme.onSurface.withValues(alpha: 0.4),
               )
             : null,
         filled: true,
         fillColor: Colors.white.withValues(alpha: 0.05),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
       ),
       validator: validator,
     );
@@ -214,24 +282,37 @@ class _ThemeSelector extends ConsumerWidget {
     return PopupMenuButton<ThemeMode>(
       tooltip: l10n.changeTheme,
       initialValue: currentMode,
-      onSelected: (value) => ref.read(appThemeModeProvider.notifier).setThemeMode(value),
+      onSelected: (value) =>
+          ref.read(appThemeModeProvider.notifier).setThemeMode(value),
       color: const Color(0xFF1F2225),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       itemBuilder: (context) => ThemeMode.values
-          .map((item) => PopupMenuItem(
-                value: item,
-                child: Row(
-                  children: [
-                    Icon(_themeModeIcon(item), size: 18, color: colorScheme.primary),
-                    const SizedBox(width: 12),
-                    Text(_themeModeLabel(item, l10n), style: const TextStyle(fontWeight: FontWeight.w700)),
-                  ],
-                ),
-              ))
+          .map(
+            (item) => PopupMenuItem(
+              value: item,
+              child: Row(
+                children: [
+                  Icon(
+                    _themeModeIcon(item),
+                    size: 18,
+                    color: colorScheme.primary,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    _themeModeLabel(item, l10n),
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+            ),
+          )
           .toList(),
       child: Container(
         padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.05), shape: BoxShape.circle),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.05),
+          shape: BoxShape.circle,
+        ),
         child: Icon(_themeModeIcon(currentMode), color: Colors.white, size: 20),
       ),
     );
@@ -261,24 +342,39 @@ class _LanguageSelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final colorScheme = Theme.of(context).colorScheme;
 
     return PopupMenuButton<AppLocale>(
       tooltip: l10n.changeLanguage,
       initialValue: currentLocale,
-      onSelected: (value) => ref.read(appLocaleProvider.notifier).setLocale(value),
+      onSelected: (value) =>
+          ref.read(appLocaleProvider.notifier).setLocale(value),
       color: const Color(0xFF1F2225),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       itemBuilder: (context) => AppLocale.values
-          .map((item) => PopupMenuItem(
-                value: item,
-                child: Text(item.nativeLabel, style: const TextStyle(fontWeight: FontWeight.w700)),
-              ))
+          .map(
+            (item) => PopupMenuItem(
+              value: item,
+              child: Text(
+                item.nativeLabel,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+          )
           .toList(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(20)),
-        child: Text(currentLocale.code.toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13)),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          currentLocale.code.toUpperCase(),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+            fontSize: 13,
+          ),
+        ),
       ),
     );
   }

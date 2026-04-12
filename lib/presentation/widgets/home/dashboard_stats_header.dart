@@ -1,10 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../core/constants/app_colors.dart';
-import '../../core/constants/liquid_glass.dart';
+import 'package:teacher_school_app/core/localization/l10n_extension.dart';
+
 import '../../../data/models/dashboard_model.dart';
-import 'package:teacher_school_app/l10n/app_localizations.dart';
 
 class DashboardStatsHeader extends StatelessWidget {
   final String userName;
@@ -18,7 +17,7 @@ class DashboardStatsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final l10n = context.l10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final topPadding = MediaQuery.of(context).padding.top;
@@ -196,7 +195,10 @@ class _ProfileCircle extends StatelessWidget {
       height: 48,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.3),
+          width: 2,
+        ),
         gradient: LinearGradient(
           colors: [
             Colors.white.withValues(alpha: 0.2),

@@ -1,13 +1,13 @@
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
+import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
-import '../../../core/network/api_error_handler.dart';
 import '../../providers/conference_provider.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
+import '../../widgets/common/animated_pressable.dart';
 import '../../widgets/app_feedback.dart';
-import 'dart:ui';
 
 class ConferenceCreateScreen extends ConsumerStatefulWidget {
   const ConferenceCreateScreen({super.key});
@@ -39,7 +39,10 @@ class _ConferenceCreateScreenState
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text(l10n.conferenceCreateTitle, style: const TextStyle(fontWeight: FontWeight.w900)),
+          title: Text(
+            l10n.conferenceCreateTitle,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
@@ -67,17 +70,33 @@ class _ConferenceCreateScreenState
                   if (picked != null) setState(() => _selectedDate = picked);
                 },
                 child: PremiumCard(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   child: Row(
                     children: [
-                      Icon(Icons.calendar_month_rounded, color: colorScheme.primary),
+                      Icon(
+                        Icons.calendar_month_rounded,
+                        color: colorScheme.primary,
+                      ),
                       const SizedBox(width: 12),
                       Text(
-                        DateFormat('yyyy-MM-dd', l10n.intlLocaleTag).format(_selectedDate),
-                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                        DateFormat(
+                          'yyyy-MM-dd',
+                          l10n.intlLocaleTag,
+                        ).format(_selectedDate),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                        ),
                       ),
                       const Spacer(),
-                      Icon(Icons.edit_calendar_rounded, size: 18, color: colorScheme.onSurface.withValues(alpha: 0.3)),
+                      Icon(
+                        Icons.edit_calendar_rounded,
+                        size: 18,
+                        color: colorScheme.onSurface.withValues(alpha: 0.3),
+                      ),
                     ],
                   ),
                 ),
@@ -98,17 +117,24 @@ class _ConferenceCreateScreenState
                   AnimatedPressable(
                     onTap: _addSlot,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.add_rounded, size: 16, color: colorScheme.primary),
+                          Icon(
+                            Icons.add_rounded,
+                            size: 16,
+                            color: colorScheme.primary,
+                          ),
                           const SizedBox(width: 4),
                           Text(
-                            l10n.addAction ?? 'Add',
+                            l10n.addAction,
                             style: TextStyle(
                               color: colorScheme.primary,
                               fontWeight: FontWeight.w900,
@@ -124,7 +150,10 @@ class _ConferenceCreateScreenState
               const SizedBox(height: 12),
               if (_slots.isEmpty)
                 PremiumCard(
-                  padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 32,
+                    horizontal: 16,
+                  ),
                   child: Center(
                     child: Column(
                       children: [
@@ -174,9 +203,12 @@ class _ConferenceCreateScreenState
                 height: 56,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: _slots.isEmpty 
-                      ? [colorScheme.surfaceVariant, colorScheme.surfaceVariant] 
-                      : [colorScheme.primary, colorScheme.secondary],
+                    colors: _slots.isEmpty
+                        ? [
+                            colorScheme.surfaceContainerHighest,
+                            colorScheme.surfaceContainerHighest,
+                          ]
+                        : [colorScheme.primary, colorScheme.secondary],
                   ),
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
@@ -286,7 +318,10 @@ class _InputField extends StatelessWidget {
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
         ),
       ),
     );
@@ -311,11 +346,14 @@ class _SlotItem extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
         ),
         trailing: IconButton(
-          icon: Icon(Icons.delete_outline_rounded, color: colorScheme.error, size: 22),
+          icon: Icon(
+            Icons.delete_outline_rounded,
+            color: colorScheme.error,
+            size: 22,
+          ),
           onPressed: onDelete,
         ),
       ),
     );
   }
 }
-

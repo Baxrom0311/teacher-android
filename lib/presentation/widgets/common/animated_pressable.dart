@@ -27,9 +27,10 @@ class _AnimatedPressableState extends State<AnimatedPressable>
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration);
-    _animation = Tween<double>(begin: 1.0, end: widget.scale).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 1.0,
+      end: widget.scale,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override

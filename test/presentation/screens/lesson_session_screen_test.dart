@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 
 import 'package:teacher_school_app/data/models/lesson_model.dart';
 import 'package:teacher_school_app/data/repositories/lesson_repository.dart';
@@ -60,11 +59,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(l10n.lessonSessionTitle), findsOneWidget);
-    expect(find.text(l10n.lessonSessionTopicLabel), findsOneWidget);
+    expect(
+      find.text(l10n.lessonSessionTopicLabel.toUpperCase()),
+      findsOneWidget,
+    );
     expect(find.text(l10n.lessonSessionStudentsTitle), findsOneWidget);
     expect(find.text('Ali Valiyev'), findsOneWidget);
     expect(find.text(l10n.presentStatusShort), findsOneWidget);
     expect(find.text(l10n.absentStatusShort), findsOneWidget);
-    expect(find.text(l10n.lessonCoinsSaved(20)), findsOneWidget);
+    expect(find.text('20'), findsOneWidget);
   });
 }

@@ -1,5 +1,7 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:teacher_school_app/data/models/library_model.dart';
+import 'package:teacher_school_app/l10n/app_localizations.dart';
 import 'package:teacher_school_app/presentation/providers/library_provider.dart';
 import 'package:teacher_school_app/presentation/screens/library/library_screen.dart';
 
@@ -7,6 +9,7 @@ import '../../helpers/test_app.dart';
 
 void main() {
   testWidgets('library screen shows loans and available books', (tester) async {
+    final l10n = lookupAppLocalizations(const Locale('uz'));
     const algebraBook = BookData(
       id: 1,
       title: 'Algebra',
@@ -53,18 +56,19 @@ void main() {
         overrides: [libraryOverviewProvider.overrideWith((ref) => overview)],
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    expect(find.text('Mening kitoblarim'), findsOneWidget);
-    expect(find.text('Katalog'), findsOneWidget);
+    expect(find.text(l10n.libraryMyBooksTitle), findsOneWidget);
+    expect(find.text(l10n.libraryCatalogTitle), findsOneWidget);
     expect(find.text('Algebra'), findsWidgets);
-    expect(find.text('Qo‘lingizda'), findsWidgets);
-    expect(find.text('Kutubxona'), findsOneWidget);
+    expect(find.text(l10n.libraryBorrowedStatus.toUpperCase()), findsWidgets);
+    expect(find.text(l10n.libraryMenuTitle), findsOneWidget);
   });
 
   testWidgets('library screen falls back when book title is empty', (
     tester,
   ) async {
+    final l10n = lookupAppLocalizations(const Locale('uz'));
     const overview = LibraryOverview(
       booksResponse: LibraryBooksResponse(
         books: [
@@ -92,6 +96,6 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Kitob'), findsOneWidget);
+    expect(find.text(l10n.libraryBookFallback), findsOneWidget);
   });
 }

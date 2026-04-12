@@ -5,10 +5,10 @@ import '../constants/app_colors.dart';
 class TeacherAppTheme {
   TeacherAppTheme._();
 
-  static const Color _darkBackground = Color(0xFF020617); // Slate 950
-  static const Color _darkSurface = Color(0xFF0F172A);    // Slate 900
-  static const Color _darkCard = Color(0xFF1E293B);       // Slate 800
-  static const Color _darkBorder = Color(0x1A94A3B8);     // Slate 400 (10% Opacity)
+  static const Color _darkBackground = TeacherAppColors.slate950;
+  static const Color _darkSurface = TeacherAppColors.slate900;
+  static const Color _darkCard = TeacherAppColors.slate800;
+  static const Color _darkBorder = Color(0x1A94A3B8);
 
   static ThemeData get lightTheme => _buildTheme(
     brightness: Brightness.light,
@@ -17,7 +17,6 @@ class TeacherAppTheme {
     cardColor: TeacherAppColors.surface,
     borderColor: TeacherAppColors.slate200,
     secondaryTextColor: TeacherAppColors.slate500,
-    appBarBackgroundColor: TeacherAppColors.surface,
     appBarForegroundColor: TeacherAppColors.slate900,
     shadowColor: Colors.black.withValues(alpha: 0.05),
   );
@@ -29,7 +28,6 @@ class TeacherAppTheme {
     cardColor: _darkCard,
     borderColor: _darkBorder,
     secondaryTextColor: TeacherAppColors.slate400,
-    appBarBackgroundColor: _darkSurface,
     appBarForegroundColor: Colors.white,
     shadowColor: Colors.black.withValues(alpha: 0.2),
   );
@@ -41,21 +39,62 @@ class TeacherAppTheme {
     required Color cardColor,
     required Color borderColor,
     required Color secondaryTextColor,
-    required Color appBarBackgroundColor,
     required Color appBarForegroundColor,
     required Color shadowColor,
   }) {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: TeacherAppColors.primaryPurple,
-      brightness: brightness,
-    ).copyWith(
-      primary: TeacherAppColors.primaryPurple,
-      secondary: TeacherAppColors.secondaryPurple,
-      error: TeacherAppColors.error,
-      surface: surfaceColor,
-      onSurface: brightness == Brightness.dark ? Colors.white : TeacherAppColors.slate900,
-      outline: borderColor,
-      outlineVariant: borderColor.withValues(alpha: 1.0),
+    final isDark = brightness == Brightness.dark;
+    final colorScheme =
+        ColorScheme.fromSeed(
+          seedColor: TeacherAppColors.primaryPurple,
+          brightness: brightness,
+        ).copyWith(
+          primary: TeacherAppColors.primaryPurple,
+          onPrimary: Colors.white,
+          secondary: TeacherAppColors.secondaryPurple,
+          surface: surfaceColor,
+          onSurface: isDark ? Colors.white : TeacherAppColors.slate900,
+          surfaceContainerHighest: isDark
+              ? TeacherAppColors.slate800
+              : TeacherAppColors.slate100,
+          outline: borderColor,
+          error: TeacherAppColors.error,
+        );
+
+    final baseTextTheme = isDark
+        ? Typography.whiteMountainView
+        : Typography.blackMountainView;
+    final textTheme = baseTextTheme.copyWith(
+      headlineLarge: TextStyle(
+        fontWeight: FontWeight.w900,
+        color: colorScheme.onSurface,
+        letterSpacing: -1.0,
+        fontFamily: 'Inter',
+      ),
+      headlineMedium: TextStyle(
+        fontWeight: FontWeight.w800,
+        color: colorScheme.onSurface,
+        letterSpacing: -0.8,
+        fontFamily: 'Inter',
+      ),
+      titleLarge: TextStyle(
+        fontWeight: FontWeight.w800,
+        fontSize: 18,
+        color: colorScheme.onSurface,
+        letterSpacing: -0.5,
+        fontFamily: 'Inter',
+      ),
+      bodyLarge: TextStyle(
+        color: isDark ? TeacherAppColors.slate200 : TeacherAppColors.slate700,
+        fontSize: 16,
+        height: 1.5,
+        fontFamily: 'Inter',
+      ),
+      bodyMedium: TextStyle(
+        color: isDark ? TeacherAppColors.slate400 : TeacherAppColors.slate600,
+        fontSize: 14,
+        height: 1.5,
+        fontFamily: 'Inter',
+      ),
     );
 
     return ThemeData(
@@ -66,49 +105,95 @@ class TeacherAppTheme {
       scaffoldBackgroundColor: scaffoldBackgroundColor,
       cardColor: cardColor,
       shadowColor: shadowColor,
+      textTheme: textTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: appBarBackgroundColor,
+        backgroundColor: Colors.transparent,
         foregroundColor: appBarForegroundColor,
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: true,
-        titleTextStyle: TextStyle(
-          color: appBarForegroundColor,
-          fontSize: 18,
-          fontWeight: FontWeight.w800,
-          letterSpacing: -0.5,
+        titleTextStyle: textTheme.titleLarge?.copyWith(
+          fontSize: 20,
+          fontWeight: FontWeight.w900,
         ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: brightness == Brightness.dark ? _darkCard : TeacherAppColors.slate50,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: borderColor),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: borderColor),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: TeacherAppColors.primaryPurple, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: TeacherAppColors.error),
-        ),
-        labelStyle: TextStyle(color: secondaryTextColor, fontWeight: FontWeight.w500),
-        hintStyle: TextStyle(color: secondaryTextColor.withValues(alpha: 0.6)),
-        prefixIconColor: secondaryTextColor,
-        suffixIconColor: secondaryTextColor,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       ),
       cardTheme: CardThemeData(
         color: cardColor,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: borderColor, width: 1),
+          borderRadius: BorderRadius.circular(32),
+          side: BorderSide(color: borderColor.withValues(alpha: 0.5), width: 1),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: colorScheme.primary,
+          foregroundColor: Colors.white,
+          minimumSize: const Size.fromHeight(56),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 0,
+          textStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.2,
+          ),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: isDark ? _darkCard : TeacherAppColors.slate100,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: TeacherAppColors.error),
+        ),
+        labelStyle: TextStyle(
+          color: secondaryTextColor,
+          fontWeight: FontWeight.w500,
+        ),
+        hintStyle: TextStyle(color: secondaryTextColor.withValues(alpha: 0.6)),
+        prefixIconColor: secondaryTextColor,
+        suffixIconColor: secondaryTextColor,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 18,
+        ),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: surfaceColor,
+        selectedItemColor: colorScheme.primary,
+        unselectedItemColor: secondaryTextColor,
+        selectedLabelStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w900,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+        ),
+        type: BottomNavigationBarType.fixed,
+        elevation: 0,
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: isDark ? _darkCard : Colors.white,
+        contentTextStyle: TextStyle(color: colorScheme.onSurface),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: borderColor),
         ),
       ),
       dividerTheme: DividerThemeData(
@@ -116,31 +201,6 @@ class TeacherAppTheme {
         thickness: 1,
         space: 1,
       ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: surfaceColor,
-        selectedItemColor: TeacherAppColors.primaryPurple,
-        unselectedItemColor: secondaryTextColor,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
-        type: BottomNavigationBarType.fixed,
-        elevation: 8,
-      ),
-      snackBarTheme: SnackBarThemeData(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: brightness == Brightness.dark ? _darkCard : Colors.white,
-        contentTextStyle: TextStyle(color: colorScheme.onSurface),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: borderColor),
-        ),
-      ),
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(fontWeight: FontWeight.w900, letterSpacing: -1.5),
-        headlineMedium: TextStyle(fontWeight: FontWeight.w800, letterSpacing: -1.0),
-        titleLarge: TextStyle(fontWeight: FontWeight.w700, letterSpacing: -0.5),
-        bodyLarge: TextStyle(letterSpacing: 0.1),
-      ),
     );
   }
 }
-

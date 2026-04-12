@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:teacher_school_app/l10n/app_localizations.dart';
 import 'package:teacher_school_app/data/models/payment_model.dart';
 import 'package:teacher_school_app/presentation/providers/payment_provider.dart';
 import 'package:teacher_school_app/presentation/screens/payments/payment_detail_screen.dart';
@@ -10,6 +11,7 @@ void main() {
   testWidgets('payment detail screen renders student summary and history', (
     tester,
   ) async {
+    final l10n = lookupAppLocalizations(const Locale('uz'));
     final response = StudentPaymentDetailResponse(
       student: const {'name': 'Azizbek'},
       group: const {'name': '8-A'},
@@ -42,11 +44,11 @@ void main() {
         ],
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('Azizbek'), findsOneWidget);
     expect(find.text('8-A'), findsOneWidget);
-    expect(find.byIcon(Icons.add_card), findsOneWidget);
-    expect(find.byType(ListTile), findsOneWidget);
+    expect(find.byIcon(Icons.add_rounded), findsOneWidget);
+    expect(find.text(l10n.paymentHistoryTitle), findsOneWidget);
   });
 }

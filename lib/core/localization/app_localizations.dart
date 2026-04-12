@@ -15,8 +15,9 @@ class AppLocalizations {
   static generated.AppLocalizations get current =>
       AppLocalizationsRegistry.instance;
 
-  static generated.AppLocalizations? of(BuildContext context) =>
-      generated.AppLocalizations.of(context);
+  static generated.AppLocalizations of(BuildContext context) =>
+      generated.AppLocalizations.of(context) ??
+      AppLocalizationsRegistry.instance;
 
   static const List<Locale> supportedLocales =
       generated.AppLocalizations.supportedLocales;

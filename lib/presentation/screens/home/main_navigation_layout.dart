@@ -1,3 +1,6 @@
+import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 import '../../../core/constants/app_routes.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../widgets/sync_status_banner.dart';
@@ -64,14 +67,24 @@ class MainNavigationLayout extends ConsumerWidget {
                       currentIndex: currentIndex,
                       onTap: (index) {
                         switch (index) {
-                          case 0: context.go(TeacherRoutes.dashboard); break;
-                          case 1: context.go(TeacherRoutes.lessons); break;
-                          case 2: context.go(TeacherRoutes.chat); break;
-                          case 3: context.go(TeacherRoutes.profile); break;
+                          case 0:
+                            context.go(TeacherRoutes.dashboard);
+                            break;
+                          case 1:
+                            context.go(TeacherRoutes.lessons);
+                            break;
+                          case 2:
+                            context.go(TeacherRoutes.chat);
+                            break;
+                          case 3:
+                            context.go(TeacherRoutes.profile);
+                            break;
                         }
                       },
                       selectedItemColor: colorScheme.primary,
-                      unselectedItemColor: colorScheme.onSurface.withValues(alpha: 0.3),
+                      unselectedItemColor: colorScheme.onSurface.withValues(
+                        alpha: 0.3,
+                      ),
                       showUnselectedLabels: true,
                       type: BottomNavigationBarType.fixed,
                       backgroundColor: Colors.transparent,
@@ -79,8 +92,13 @@ class MainNavigationLayout extends ConsumerWidget {
                       iconSize: 24,
                       selectedFontSize: 11,
                       unselectedFontSize: 10,
-                      selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 0.2),
-                      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
+                      selectedLabelStyle: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.2,
+                      ),
+                      unselectedLabelStyle: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                      ),
                       items: [
                         BottomNavigationBarItem(
                           icon: const Padding(
@@ -122,4 +140,3 @@ class MainNavigationLayout extends ConsumerWidget {
     );
   }
 }
-

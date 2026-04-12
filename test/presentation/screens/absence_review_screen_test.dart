@@ -37,16 +37,10 @@ void main() {
     expect(find.text(l10n.absenceStatusLabel('approved')), findsOneWidget);
     expect(find.text(l10n.absenceStatusLabel('rejected')), findsOneWidget);
     expect(find.text('Ali Valiyev'), findsOneWidget);
-    expect(find.text(l10n.absenceDateLabel('2026-04-06')), findsOneWidget);
+    expect(find.text('2026-04-06'), findsOneWidget);
 
-    await tester.tap(find.text('Ali Valiyev'));
-    await tester.pumpAndSettle();
-
-    expect(
-      find.text(l10n.absenceReasonLabel('Shifokor ko\'rigi')),
-      findsOneWidget,
-    );
-    expect(find.text(l10n.rejectAction), findsOneWidget);
-    expect(find.text(l10n.approveAction), findsOneWidget);
+    expect(find.text('Shifokor ko\'rigi'), findsOneWidget);
+    expect(find.text(l10n.rejectAction.toUpperCase()), findsOneWidget);
+    expect(find.text(l10n.approveAction.toUpperCase()), findsOneWidget);
   });
 }

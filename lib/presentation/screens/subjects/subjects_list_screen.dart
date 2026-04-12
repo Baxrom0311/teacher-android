@@ -1,14 +1,14 @@
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../../data/models/subject_model.dart';
 import '../../providers/subject_provider.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
+import '../../widgets/common/animated_pressable.dart';
 import '../../widgets/app_feedback.dart';
-import 'dart:ui';
 
 class SubjectsListScreen extends ConsumerWidget {
   const SubjectsListScreen({super.key});
@@ -38,7 +38,10 @@ class SubjectsListScreen extends ConsumerWidget {
                   centerTitle: true,
                   title: Text(
                     l10n.subjectsTitle,
-                    style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 24,
+                    ),
                   ),
                 ),
                 if (currentYear != null)
@@ -46,16 +49,25 @@ class SubjectsListScreen extends ConsumerWidget {
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
                         decoration: BoxDecoration(
                           color: colorScheme.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: colorScheme.primary.withValues(alpha: 0.15)),
+                          border: Border.all(
+                            color: colorScheme.primary.withValues(alpha: 0.15),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.calendar_today_rounded, size: 16, color: colorScheme.primary),
+                            Icon(
+                              Icons.calendar_today_rounded,
+                              size: 16,
+                              color: colorScheme.primary,
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               l10n.academicYearLabel(currentYear.name),
@@ -81,16 +93,13 @@ class SubjectsListScreen extends ConsumerWidget {
                   SliverPadding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
                     sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final subject = subjects[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _SubjectItem(subject: subject),
-                          );
-                        },
-                        childCount: subjects.length,
-                      ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final subject = subjects[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _SubjectItem(subject: subject),
+                        );
+                      }, childCount: subjects.length),
                     ),
                   ),
               ],
@@ -119,7 +128,9 @@ class _SubjectItem extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return AnimatedPressable(
-      onTap: () => GoRouter.of(context).push('/subjects/${subject.id}', extra: subject.name),
+      onTap: () => GoRouter.of(
+        context,
+      ).push('/subjects/${subject.id}', extra: subject.name),
       child: PremiumCard(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -133,7 +144,11 @@ class _SubjectItem extends StatelessWidget {
                     color: colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Icon(Icons.book_rounded, color: colorScheme.primary, size: 28),
+                  child: Icon(
+                    Icons.book_rounded,
+                    color: colorScheme.primary,
+                    size: 28,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -170,7 +185,9 @@ class _SubjectItem extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: subject.groups.map((group) => _GroupChip(label: group)).toList(),
+              children: subject.groups
+                  .map((group) => _GroupChip(label: group))
+                  .toList(),
             ),
           ],
         ),
@@ -204,4 +221,3 @@ class _GroupChip extends StatelessWidget {
     );
   }
 }
-

@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
+import 'package:intl/intl.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
+
+import '../../../core/constants/app_colors.dart';
 import '../../../core/network/api_error_handler.dart';
-import '../../../core/localization/app_localizations_registry.dart';
 import '../../providers/lesson_provider.dart';
-import '../../../data/repositories/lesson_repository.dart';
 import '../../../data/models/lesson_model.dart';
 import '../../widgets/app_feedback.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
+import '../../widgets/common/animated_pressable.dart';
 
 class TodayLessonsScreen extends ConsumerStatefulWidget {
   const TodayLessonsScreen({super.key});
@@ -67,10 +65,20 @@ class _TodayLessonsScreenState extends ConsumerState<TodayLessonsScreen> {
           centerTitle: true,
           title: Column(
             children: [
-              Text(l10n.todayLessonsTitle, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+              Text(
+                l10n.todayLessonsTitle,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 18,
+                ),
+              ),
               Text(
                 DateFormat('EEEE, d MMMM').format(DateTime.now()),
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colorScheme.onSurface.withValues(alpha: 0.4)),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: colorScheme.onSurface.withValues(alpha: 0.4),
+                ),
               ),
             ],
           ),
@@ -100,8 +108,7 @@ class _TodayLessonsScreenState extends ConsumerState<TodayLessonsScreen> {
                     );
                   },
                 ),
-                if (_isStartingLesson)
-                  const AppLoadingView(),
+                if (_isStartingLesson) const AppLoadingView(),
               ],
             );
           },
@@ -117,32 +124,42 @@ class _TodayLessonsScreenState extends ConsumerState<TodayLessonsScreen> {
   }
 
   Widget _buildLessonCard(TimetableEntry entry, int quarterId, bool isCurrent) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return PremiumCard(
       padding: const EdgeInsets.all(20),
       border: isCurrent
-          ? Border.all(color: colorScheme.primary.withValues(alpha: 0.5), width: 2)
+          ? Border.all(
+              color: colorScheme.primary.withValues(alpha: 0.5),
+              width: 2,
+            )
           : null,
       color: isCurrent ? colorScheme.primary.withValues(alpha: 0.05) : null,
-      shadowColor: isCurrent ? colorScheme.primary.withValues(alpha: 0.2) : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: (isCurrent ? colorScheme.primary : Colors.white).withValues(alpha: 0.1),
+                  color: (isCurrent ? colorScheme.primary : Colors.white)
+                      .withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: (isCurrent ? colorScheme.primary : Colors.white).withValues(alpha: 0.1)),
+                  border: Border.all(
+                    color: (isCurrent ? colorScheme.primary : Colors.white)
+                        .withValues(alpha: 0.1),
+                  ),
                 ),
                 child: Text(
                   '#${entry.orderNumber}',
                   style: TextStyle(
-                    color: isCurrent ? colorScheme.primary : colorScheme.onSurface.withValues(alpha: 0.6),
+                    color: isCurrent
+                        ? colorScheme.primary
+                        : colorScheme.onSurface.withValues(alpha: 0.6),
                     fontWeight: FontWeight.w900,
                     fontSize: 11,
                     letterSpacing: 0.5,
@@ -159,8 +176,7 @@ class _TodayLessonsScreenState extends ConsumerState<TodayLessonsScreen> {
                 ),
               ),
               const Spacer(),
-              if (isCurrent)
-                _LivePulse(),
+              if (isCurrent) const _LivePulse(),
             ],
           ),
           const SizedBox(height: 20),
@@ -176,7 +192,10 @@ class _TodayLessonsScreenState extends ConsumerState<TodayLessonsScreen> {
           const SizedBox(height: 10),
           Row(
             children: [
-              _InfoTag(icon: Icons.people_outline_rounded, label: entry.groupName),
+              _InfoTag(
+                icon: Icons.people_outline_rounded,
+                label: entry.groupName,
+              ),
               const SizedBox(width: 12),
               _InfoTag(icon: Icons.room_rounded, label: entry.room),
             ],
@@ -193,7 +212,9 @@ class _TodayLessonsScreenState extends ConsumerState<TodayLessonsScreen> {
                         colors: [colorScheme.primary, colorScheme.secondary],
                       )
                     : null,
-                color: isCurrent ? null : colorScheme.onSurface.withValues(alpha: 0.05),
+                color: isCurrent
+                    ? null
+                    : colorScheme.onSurface.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: isCurrent
                     ? [
@@ -201,12 +222,12 @@ class _TodayLessonsScreenState extends ConsumerState<TodayLessonsScreen> {
                           color: colorScheme.primary.withValues(alpha: 0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
-                        )
+                        ),
                       ]
                     : null,
               ),
               child: Text(
-                AppLocalizationsRegistry.instance.startLessonButton,
+                context.l10n.startLessonButton,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: isCurrent ? Colors.white : colorScheme.onSurface,
@@ -241,11 +262,19 @@ class _InfoTag extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: colorScheme.onSurface.withValues(alpha: 0.4)),
+          Icon(
+            icon,
+            size: 14,
+            color: colorScheme.onSurface.withValues(alpha: 0.4),
+          ),
           const SizedBox(width: 6),
           Text(
             label,
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colorScheme.onSurface.withValues(alpha: 0.7)),
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
           ),
         ],
       ),
@@ -254,17 +283,23 @@ class _InfoTag extends StatelessWidget {
 }
 
 class _LivePulse extends StatefulWidget {
+  const _LivePulse();
+
   @override
   State<_LivePulse> createState() => _LivePulseState();
 }
 
-class _LivePulseState extends State<_LivePulse> with SingleTickerProviderStateMixin {
+class _LivePulseState extends State<_LivePulse>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(reverse: true);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
   }
 
   @override
@@ -300,3 +335,4 @@ class _LivePulseState extends State<_LivePulse> with SingleTickerProviderStateMi
       ),
     );
   }
+}

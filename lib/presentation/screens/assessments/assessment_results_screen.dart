@@ -1,12 +1,15 @@
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/liquid_glass.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
+
+import '../../../core/constants/app_colors.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../providers/assessment_provider.dart';
-import '../../common/page_background.dart';
-import '../../common/premium_card.dart';
-import '../../common/animated_pressable.dart';
 import '../../widgets/app_feedback.dart';
+import '../../widgets/common/page_background.dart';
+import '../../widgets/common/premium_card.dart';
 
 class AssessmentResultsScreen extends ConsumerStatefulWidget {
   final int assessmentId;
@@ -28,13 +31,15 @@ class _AssessmentResultsScreenState
   final Map<String, num?> _scores = {};
   final Map<String, String?> _comments = {};
 
-  void _saveResults() async {
+  Future<void> _saveResults() async {
     final l10n = context.l10n;
     final success = await ref
         .read(assessmentControllerProvider.notifier)
         .saveResults(widget.assessmentId, _scores, _comments);
 
-    if (success && mounted) {
+    if (!mounted) return;
+
+    if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.assessmentResultsSaved),
@@ -42,12 +47,11 @@ class _AssessmentResultsScreenState
         ),
       );
       ref.invalidate(assessmentResultsProvider(widget.assessmentId));
-    } else if (mounted) {
+    } else {
       final state = ref.read(assessmentControllerProvider);
-      final errorMsg = ApiErrorHandler.readableMessage(state.error);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(errorMsg),
+          content: Text(ApiErrorHandler.readableMessage(state.error)),
           backgroundColor: TeacherAppColors.error,
         ),
       );
@@ -57,13 +61,11 @@ class _AssessmentResultsScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final resultsAsync = ref.watch(
       assessmentResultsProvider(widget.assessmentId),
     );
-    final state = ref.watch(assessmentControllerProvider);
-    final isLoading = state.isLoading;
+    final controllerState = ref.watch(assessmentControllerProvider);
 
     return PageBackground(
       child: Scaffold(
@@ -79,16 +81,22 @@ class _AssessmentResultsScreenState
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 8),
-              child: AnimatedPressable(
-                onTap: isLoading ? null : _saveResults,
+              child: InkWell(
+                onTap: controllerState.isLoading ? null : _saveResults,
+                borderRadius: BorderRadius.circular(12),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: colorScheme.primary.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: colorScheme.primary.withValues(alpha: 0.3),
+                    ),
                   ),
-                  child: isLoading
+                  child: controllerState.isLoading
                       ? SizedBox(
                           width: 20,
                           height: 20,
@@ -111,12 +119,13 @@ class _AssessmentResultsScreenState
         ),
         body: resultsAsync.when(
           data: (data) {
-            final results = data['results'] as List;
+            final results = (data['results'] as List?) ?? const [];
 
             if (results.isEmpty) {
               return Center(
                 child: AppEmptyView(
                   title: l10n.assessmentNoStudents,
+                  message: l10n.assessmentNoStudents,
                   icon: Icons.group_off_rounded,
                 ),
               );
@@ -127,12 +136,9 @@ class _AssessmentResultsScreenState
               itemCount: results.length,
               itemBuilder: (context, index) {
                 final res = results[index];
-                final sId = res.studentId.toString();
-
-                if (!_scores.containsKey(sId)) {
-                  _scores[sId] = res.score;
-                  _comments[sId] = res.comment;
-                }
+                final key = res.studentId.toString();
+                _scores.putIfAbsent(key, () => res.score as num?);
+                _comments.putIfAbsent(key, () => res.comment as String?);
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
@@ -147,12 +153,18 @@ class _AssessmentResultsScreenState
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
-                                color: colorScheme.secondary.withValues(alpha: 0.1),
+                                color: colorScheme.secondary.withValues(
+                                  alpha: 0.1,
+                                ),
                                 shape: BoxShape.circle,
                               ),
                               child: Center(
                                 child: Text(
-                                  res.studentName.isNotEmpty ? res.studentName[0].toUpperCase() : 'S',
+                                  res.studentName.toString().isNotEmpty
+                                      ? res.studentName
+                                            .toString()[0]
+                                            .toUpperCase()
+                                      : 'S',
                                   style: TextStyle(
                                     color: colorScheme.secondary,
                                     fontWeight: FontWeight.w900,
@@ -163,7 +175,7 @@ class _AssessmentResultsScreenState
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                res.studentName,
+                                res.studentName.toString(),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 16,
@@ -180,10 +192,12 @@ class _AssessmentResultsScreenState
                               flex: 3,
                               child: _InputField(
                                 label: l10n.assessmentScoreLabel,
-                                initialValue: _scores[sId]?.toString() ?? '',
+                                initialValue: _scores[key]?.toString() ?? '',
                                 hint: l10n.assessmentScoreHint,
                                 keyboardType: TextInputType.number,
-                                onChanged: (val) => _scores[sId] = num.tryParse(val),
+                                onChanged: (val) {
+                                  _scores[key] = num.tryParse(val);
+                                },
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -191,9 +205,13 @@ class _AssessmentResultsScreenState
                               flex: 5,
                               child: _InputField(
                                 label: l10n.assessmentCommentLabel,
-                                initialValue: _comments[sId] ?? '',
+                                initialValue: _comments[key] ?? '',
                                 hint: l10n.assessmentCommentHintEmpty,
-                                onChanged: (val) => _comments[sId] = val.trim().isEmpty ? null : val.trim(),
+                                onChanged: (val) {
+                                  _comments[key] = val.trim().isEmpty
+                                      ? null
+                                      : val.trim();
+                                },
                               ),
                             ),
                           ],
@@ -242,7 +260,9 @@ class _InputField extends StatelessWidget {
             fontSize: 10,
             fontWeight: FontWeight.w900,
             letterSpacing: 0.5,
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.45),
           ),
         ),
         const SizedBox(height: 8),
@@ -252,24 +272,14 @@ class _InputField extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
           decoration: InputDecoration(
             hintText: hint,
-            filled: true,
-            fillColor: Colors.white.withValues(alpha: 0.05),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 12,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
-            ),
-            isDense: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           ),
           onChanged: onChanged,
         ),
       ],
     );
-  }
-}
   }
 }
