@@ -1,16 +1,17 @@
 class ApiConstants {
-  static const String _defaultBaseUrl = 'https://ranchschool.izlash.uz';
+  static const String _defaultLocalUrl = 'http://192.168.0.162:8000';
+  static const String _defaultProdUrl = 'https://ranchschool.izlash.uz';
+
   static const String _envBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: _defaultBaseUrl,
+    defaultValue: _defaultLocalUrl,
   );
   static const String _envHostHeader = String.fromEnvironment(
     'API_HOST_HEADER',
     defaultValue: '',
   );
 
-  static String get baseUrl =>
-      _envBaseUrl.isEmpty ? _defaultBaseUrl : _envBaseUrl;
+  static String get baseUrl => _envBaseUrl;
   static String? get hostHeader {
     final trimmed = _envHostHeader.trim();
     return trimmed.isEmpty ? null : trimmed;
@@ -30,7 +31,13 @@ class ApiConstants {
 
   static const String apiPrefix = '/api';
 
-  // Auth
+  // Auth (Central)
+  static const String publicSchools = '$apiPrefix/public/schools';
+  static const String centralTeacherLogin = '$apiPrefix/teacher/login';
+  static const String teacherSchools = '$apiPrefix/teacher/schools';
+  static const String teacherSchoolToken = '$apiPrefix/teacher/schools/token';
+
+  // Auth (Tenant)
   static const String login = '$apiPrefix/login';
   static const String logout = '$apiPrefix/logout';
   static const String me = '$apiPrefix/me';
@@ -126,7 +133,7 @@ class ApiConstants {
   );
   static const String reverbHost = String.fromEnvironment(
     'REVERB_HOST',
-    defaultValue: 'ranchschool.izlash.uz',
+    defaultValue: '192.168.0.162',
   );
   static const int reverbPort = int.fromEnvironment(
     'REVERB_PORT',

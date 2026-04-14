@@ -12,6 +12,7 @@ import '../../presentation/screens/assessments/assessments_list_screen.dart';
 import '../../presentation/screens/attendance/absence_review_screen.dart';
 import '../../presentation/screens/attendance/attendance_create_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
+import '../../presentation/screens/auth/school_selection_screen.dart';
 import '../../presentation/screens/chat/chat_contacts_screen.dart';
 import '../../presentation/screens/chat/chat_room_screen.dart';
 import '../../presentation/screens/conference/conference_create_screen.dart';
@@ -25,6 +26,7 @@ import '../../presentation/screens/homework/homework_list_screen.dart';
 import '../../presentation/screens/library/library_screen.dart';
 import '../../presentation/screens/lessons/lesson_session_screen.dart';
 import '../../presentation/screens/lessons/today_lessons_screen.dart';
+import '../../presentation/screens/splash/splash_screen.dart';
 import '../../presentation/screens/meals/meals_list_screen.dart';
 import '../../presentation/screens/notifications/notifications_screen.dart';
 import '../../presentation/screens/payments/payment_detail_screen.dart';
@@ -60,15 +62,23 @@ class TeacherRouterNotifier extends ChangeNotifier {
     final location = state.matchedLocation;
     final isPublicRoute = TeacherAppRouter.publicRoutes.contains(location);
 
-    if (authState.isLoading) {
+    if (authState.isLoading && location == TeacherRoutes.splash) {
       return null;
     }
 
     if (!authState.isAuthenticated && !isPublicRoute) {
-      return TeacherRoutes.login;
+      if (!authState.isSchoolSelected && location != TeacherRoutes.selectSchool) {
+        return TeacherRoutes.selectSchool;
+      }
+      if (authState.isSchoolSelected && location != TeacherRoutes.login) {
+        return TeacherRoutes.login;
+      }
     }
 
-    if (authState.isAuthenticated && isPublicRoute) {
+    if (authState.isAuthenticated &&
+        (location == TeacherRoutes.login || 
+         location == TeacherRoutes.splash || 
+         location == TeacherRoutes.selectSchool)) {
       return TeacherRoutes.dashboard;
     }
 
@@ -81,7 +91,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     navigatorKey: TeacherAppRouter.rootNavigatorKey,
-    initialLocation: TeacherRoutes.login,
+    initialLocation: TeacherRoutes.splash,
     debugLogDiagnostics: kDebugMode,
     refreshListenable: routerNotifier,
     redirect: routerNotifier.redirect,
@@ -98,13 +108,27 @@ class TeacherAppRouter {
   static final GlobalKey<NavigatorState> shellNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'shell');
 
-  static const Set<String> publicRoutes = {TeacherRoutes.login};
+  static const Set<String> publicRoutes = {
+    TeacherRoutes.login,
+    TeacherRoutes.splash,
+    TeacherRoutes.selectSchool,
+  };
 
   static final List<RouteBase> routes = [
+    GoRoute(
+      name: TeacherRoutes.splash,
+      path: TeacherRoutes.splash,
+      builder: (context, state) => const SplashScreen(),
+    ),
     GoRoute(
       name: TeacherRoutes.login,
       path: TeacherRoutes.login,
       builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      name: TeacherRoutes.selectSchool,
+      path: TeacherRoutes.selectSchool,
+      builder: (context, state) => const SchoolSelectionScreen(),
     ),
     GoRoute(
       name: TeacherRoutes.lessonSession,

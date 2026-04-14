@@ -51,8 +51,8 @@ class TeacherAppColors {
   static const Color grade1 = Color(0xFFDC2626);
 
   static const List<Color> liquidIndigo = [
-    Color(0xFF0EA5E9),
-    Color(0xFF38BDF8),
+    Color(0xFF6366F1),
+    Color(0xFF8B5CF6),
   ];
   static const List<Color> liquidEmerald = [
     Color(0xFF10B981),

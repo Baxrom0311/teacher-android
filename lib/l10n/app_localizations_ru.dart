@@ -37,13 +37,31 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get teacherSubtitle =>
-      'Войдите, чтобы управлять своими классами и уроками';
+      'Войдите, чтобы управлять вашими классами и уроками';
 
   @override
-  String get usernameLabel => 'Логин';
+  String get selectSchool => 'Выберите школу';
 
   @override
-  String get usernameRequired => 'Введите логин или номер телефона';
+  String get selectSchoolSubtitle => 'Выберите школу, в которую хотите войти';
+
+  @override
+  String get noSchoolsFound => 'Школы не найдены';
+
+  @override
+  String get changeSchool => 'Сменить школу';
+
+  @override
+  String get usernameLabel => 'Номер телефона';
+
+  @override
+  String get phoneNumberLabel => 'Номер телефона';
+
+  @override
+  String get phoneNumberRequired => 'Введите номер телефона';
+
+  @override
+  String get usernameRequired => 'Введите номер телефона';
 
   @override
   String get usernameMinimum => 'Введите минимум 3 символа';

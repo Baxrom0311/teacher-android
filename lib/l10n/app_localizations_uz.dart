@@ -37,13 +37,31 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get teacherSubtitle =>
-      'Sinf va darslaringizni boshqarish uchun tizimga kiring';
+      'Darslar va mashg\'ulotlarni boshqarish uchun tizimga kiring';
 
   @override
-  String get usernameLabel => 'Login';
+  String get selectSchool => 'Maktabni tanlang';
 
   @override
-  String get usernameRequired => 'Login yoki telefon raqamni kiriting';
+  String get selectSchoolSubtitle => 'Kirmoqchi bo\'lgan maktabingizni tanlang';
+
+  @override
+  String get noSchoolsFound => 'Maktablar topilmadi';
+
+  @override
+  String get changeSchool => 'Maktabni o\'zgartirish';
+
+  @override
+  String get usernameLabel => 'Telefon raqami';
+
+  @override
+  String get phoneNumberLabel => 'Telefon raqami';
+
+  @override
+  String get phoneNumberRequired => 'Telefon raqamini kiriting';
+
+  @override
+  String get usernameRequired => 'Telefon raqamini kiriting';
 
   @override
   String get usernameMinimum => 'Kamida 3 ta belgi kiriting';

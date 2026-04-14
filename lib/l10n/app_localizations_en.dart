@@ -39,10 +39,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get teacherSubtitle => 'Sign in to manage your classes and lessons';
 
   @override
-  String get usernameLabel => 'Username';
+  String get selectSchool => 'Select school';
 
   @override
-  String get usernameRequired => 'Enter your login or phone number';
+  String get selectSchoolSubtitle => 'Choose the school you want to sign in to';
+
+  @override
+  String get noSchoolsFound => 'No schools found';
+
+  @override
+  String get changeSchool => 'Change school';
+
+  @override
+  String get usernameLabel => 'Phone number';
+
+  @override
+  String get phoneNumberLabel => 'Phone number';
+
+  @override
+  String get phoneNumberRequired => 'Enter your phone number';
+
+  @override
+  String get usernameRequired => 'Enter your phone number';
 
   @override
   String get usernameMinimum => 'Enter at least 3 characters';
@@ -1016,12 +1034,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get langEn => 'English';
 
   @override
-  String get paymentSuccessTitle => 'To\'lov muvaffaqiyatli!';
+  String get paymentSuccessTitle => 'Payment Success';
 
   @override
   String get paymentSuccessMessage =>
-      'Mablag\' to\'liq qabul qilindi va tizimda aks etdi.';
+      'Your payment has been successfully processed.';
 
   @override
-  String get backToHome => 'Asosiy ekranga qaytish';
+  String get backToHome => 'Back to Home';
 }

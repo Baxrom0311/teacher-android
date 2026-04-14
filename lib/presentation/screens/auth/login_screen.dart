@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:teacher_school_app/core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/localization/app_locale.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
@@ -9,6 +10,8 @@ import '../../providers/auth_provider.dart';
 import '../../widgets/app_feedback.dart';
 import '../../widgets/common/page_background.dart';
 import '../../widgets/common/premium_card.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/constants/app_routes.dart';
 import '../../widgets/common/animated_pressable.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -81,17 +84,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: colorScheme.primary.withValues(alpha: 0.15),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: colorScheme.primary.withValues(alpha: 0.3),
-                            width: 2,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: TeacherAppColors.liquidIndigo,
                           ),
+                          shape: BoxShape.circle,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.school_rounded,
                           size: 64,
-                          color: colorScheme.primary,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -108,12 +111,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      l10n.teacherSubtitle,
+                      authState.selectedSchoolName ?? l10n.teacherSubtitle,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white.withValues(alpha: 0.6),
-                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                        color: Colors.white.withValues(alpha: 0.9),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Center(
+                      child: TextButton.icon(
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white70,
+                          backgroundColor: Colors.white10,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        ),
+                        onPressed: () {
+                          ref.read(authControllerProvider.notifier).clearSelectedSchool();
+                          context.go(TeacherRoutes.selectSchool);
+                        },
+                        icon: const Icon(Icons.swap_horiz_rounded, size: 18),
+                        label: Text(l10n.changeSchool ?? 'Change School'),
                       ),
                     ),
                     const SizedBox(height: 48),
@@ -133,11 +155,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ],
                           _buildTextField(
                             controller: _usernameController,
-                            label: l10n.usernameLabel,
-                            icon: Icons.person_rounded,
+                            label: l10n.phoneNumberLabel,
+                            icon: Icons.phone_android_rounded,
+                            keyboardType: TextInputType.phone,
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
-                                return l10n.usernameRequired;
+                                return l10n.phoneNumberRequired;
                               }
                               return null;
                             },
@@ -221,6 +244,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     required TextEditingController controller,
     required String label,
     required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
     bool isPassword = false,
     bool isObscured = false,
     VoidCallback? onToggleObscure,
@@ -232,6 +256,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       obscureText: isObscured,
       onChanged: (_) => ref.read(authControllerProvider.notifier).clearError(),
       style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+      keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(

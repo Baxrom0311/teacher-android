@@ -15,8 +15,8 @@ class ApiService {
     _dio = Dio(
       BaseOptions(
         baseUrl: ApiConstants.baseUrl,
-        connectTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 15),
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 60),
         headers: ApiConstants.defaultHeaders,
       ),
     );
@@ -24,6 +24,27 @@ class ApiService {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
+          // Dynamic Base URL and Host Resolution
+          final skipTenant = options.extra['skipTenant'] == true;
+          final tenantHost = await _storage.read(key: 'tenant_host');
+          
+          if (!skipTenant && tenantHost != null && tenantHost.isNotEmpty) {
+            // If we are in local dev (Central IP), we hit the IP but use Host header
+            final isLocalDev = ApiConstants.baseUrl.contains('192.168.') || 
+                               ApiConstants.baseUrl.contains('10.0.2.2') || 
+                               ApiConstants.baseUrl.contains('127.') || 
+                               ApiConstants.baseUrl.contains('localhost');
+                               
+            if (isLocalDev) {
+              options.baseUrl = ApiConstants.baseUrl;
+              options.headers['Host'] = tenantHost;
+            } else {
+              options.baseUrl = tenantHost.startsWith('http') 
+                  ? tenantHost 
+                  : 'https://$tenantHost';
+            }
+          }
+
           final skipAuth = options.extra['skipAuth'] == true;
           if (skipAuth) {
             options.headers.remove('Authorization');
@@ -120,6 +141,14 @@ class ApiService {
 
           return handler.next(error);
         },
+      ),
+    );
+
+    _dio.interceptors.add(
+      LogInterceptor(
+        requestBody: true,
+        responseBody: true,
+        logPrint: (obj) => debugPrint(obj.toString()),
       ),
     );
   }

@@ -157,19 +157,55 @@ abstract class AppLocalizations {
   /// No description provided for @teacherSubtitle.
   ///
   /// In uz, this message translates to:
-  /// **'Sinf va darslaringizni boshqarish uchun tizimga kiring'**
+  /// **'Darslar va mashg\'ulotlarni boshqarish uchun tizimga kiring'**
   String get teacherSubtitle;
+
+  /// No description provided for @selectSchool.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maktabni tanlang'**
+  String get selectSchool;
+
+  /// No description provided for @selectSchoolSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kirmoqchi bo\'lgan maktabingizni tanlang'**
+  String get selectSchoolSubtitle;
+
+  /// No description provided for @noSchoolsFound.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maktablar topilmadi'**
+  String get noSchoolsFound;
+
+  /// No description provided for @changeSchool.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maktabni o\'zgartirish'**
+  String get changeSchool;
 
   /// No description provided for @usernameLabel.
   ///
   /// In uz, this message translates to:
-  /// **'Login'**
+  /// **'Telefon raqami'**
   String get usernameLabel;
+
+  /// No description provided for @phoneNumberLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefon raqami'**
+  String get phoneNumberLabel;
+
+  /// No description provided for @phoneNumberRequired.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefon raqamini kiriting'**
+  String get phoneNumberRequired;
 
   /// No description provided for @usernameRequired.
   ///
   /// In uz, this message translates to:
-  /// **'Login yoki telefon raqamni kiriting'**
+  /// **'Telefon raqamini kiriting'**
   String get usernameRequired;
 
   /// No description provided for @usernameMinimum.

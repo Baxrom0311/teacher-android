@@ -1,8 +1,10 @@
 class TeacherRoutes {
   TeacherRoutes._();
 
+  static const String splash = '/splash';
   static const String dashboard = '/dashboard';
   static const String login = '/login';
+  static const String selectSchool = '/select-school';
   static const String lessons = '/lessons';
 
   // Attendance

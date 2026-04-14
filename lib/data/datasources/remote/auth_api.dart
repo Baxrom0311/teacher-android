@@ -6,8 +6,33 @@ class AuthApi {
   final ApiService _apiService;
 
   AuthApi(this._apiService);
+  
+  Future<Response> getPublicSchools() async {
+    return await _apiService.dio.get(
+      ApiConstants.publicSchools,
+      options: Options(extra: {
+        'skipAuth': true,
+        'skipTenant': true,
+      }),
+    );
+  }
 
-  Future<Response> login(
+  Future<Response> centralLogin(
+    String username,
+    String password,
+    String deviceName,
+  ) async {
+    return await _apiService.dio.post(
+      ApiConstants.centralTeacherLogin,
+      data: {
+        'login': username,
+        'password': password,
+        'device_name': deviceName,
+      },
+    );
+  }
+
+  Future<Response> tenantLogin(
     String username,
     String password,
     String deviceName,
@@ -15,8 +40,18 @@ class AuthApi {
     return await _apiService.dio.post(
       ApiConstants.login,
       data: {
-        'email': username,
+        'login': username,
         'password': password,
+        'device_name': deviceName,
+      },
+    );
+  }
+
+  Future<Response> issueTenantToken(int membershipId, String deviceName) async {
+    return await _apiService.dio.post(
+      ApiConstants.teacherSchoolToken,
+      data: {
+        'membership_id': membershipId,
         'device_name': deviceName,
       },
     );
