@@ -414,7 +414,7 @@ class _TeacherProfileScreenState extends ConsumerState<TeacherProfileScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1C1E),
+        backgroundColor: TeacherAppColors.slate800,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(28),
@@ -489,7 +489,7 @@ class _TeacherProfileScreenState extends ConsumerState<TeacherProfileScreen> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.2),
+                color: TeacherAppColors.slate400.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -554,7 +554,7 @@ class _TeacherProfileScreenState extends ConsumerState<TeacherProfileScreen> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.2),
+                color: TeacherAppColors.slate400.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),

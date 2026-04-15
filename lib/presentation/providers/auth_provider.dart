@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/network/api_error_handler.dart';
 import '../../core/network/api_service.dart';
+import '../../core/network/dio_client.dart';
 import '../../core/services/firebase_service.dart';
 import '../../data/datasources/remote/auth_api.dart';
 import '../../data/datasources/remote/notification_api.dart';
@@ -24,6 +25,11 @@ final apiServiceProvider = Provider<ApiService>((ref) {
       ref.read(sessionExpiredSignalProvider.notifier).state++;
     },
   );
+});
+
+final dioClientProvider = Provider<DioClient>((ref) {
+  final apiService = ref.watch(apiServiceProvider);
+  return DioClient(apiService);
 });
 
 final authApiProvider = Provider<AuthApi>((ref) {

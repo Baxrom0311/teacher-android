@@ -4,7 +4,7 @@ class ApiConstants {
 
   static const String _envBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: _defaultLocalUrl,
+    defaultValue: _defaultProdUrl,
   );
   static const String _envHostHeader = String.fromEnvironment(
     'API_HOST_HEADER',
@@ -117,6 +117,20 @@ class ApiConstants {
   static String markNotificationAsRead(int id) =>
       '$apiPrefix/notifications/$id/read';
 
+  // Class Story
+  static const String stories = '$apiPrefix/stories';
+  static String storyLike(int id) => '$apiPrefix/stories/$id/like';
+  static String storyComments(int id) => '$apiPrefix/stories/$id/comments';
+  static String storyDelete(int id) => '$apiPrefix/stories/$id';
+
+  // Gallery
+  static const String galleryAlbums = '$apiPrefix/gallery/albums';
+  static String galleryPhotos(int albumId) => '$apiPrefix/gallery/albums/$albumId/photos';
+  static String galleryAlbumDelete(int id) => '$apiPrefix/gallery/albums/$id';
+
+  // Diary / Class Journal
+  static const String classJournal = '$apiPrefix/diary/class-journal';
+
   // Events
   static const String events = '$apiPrefix/events';
 
@@ -133,7 +147,7 @@ class ApiConstants {
   );
   static const String reverbHost = String.fromEnvironment(
     'REVERB_HOST',
-    defaultValue: '192.168.0.162',
+    defaultValue: 'ranchschool.izlash.uz',
   );
   static const int reverbPort = int.fromEnvironment(
     'REVERB_PORT',

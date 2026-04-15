@@ -57,4 +57,27 @@ class TeacherRoutes {
   static const String chatRoom = '/chat/:userId';
   static String chatRoomPath(int userId) => '/chat/$userId';
   static const String meal = '/meal';
+
+  // Quiz
+  static const String quizList = '/quizzes';
+  static const String quizCreate = '/quizzes/create';
+  static const String quizResults = '/quizzes/:id/results';
+  static String quizResultsPath(int id) => '/quizzes/$id/results';
+
+  // Class Story
+  static const String stories = '/stories';
+  static const String storyCreate = '/stories/create';
+
+  // Behavior
+  static const String behaviorList = '/behavior';
+  static const String behaviorCreate = '/behavior/create';
+
+  // Gallery
+  static const String gallery = '/gallery';
+  static const String galleryAlbum = '/gallery/album';
+
+  // Diary / Class Journal
+  static const String classJournal = '/diary/class-journal/:groupId';
+  static String classJournalPath(int groupId) =>
+      '/diary/class-journal/$groupId';
 }

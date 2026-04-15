@@ -1051,4 +1051,147 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get backToHome => 'Asosiy ekranga qaytish';
+
+  @override
+  String get classJournalTitle => 'Sinf jurnali';
+
+  @override
+  String get classJournalSelectDate => 'Sanani tanlang';
+
+  @override
+  String get classJournalEmpty => 'Bu kunga jurnal ma\'lumotlari yo\'q';
+
+  @override
+  String get classJournalLoadFailed => 'Jurnalni yuklashda xatolik';
+
+  @override
+  String classJournalStudentCount(int count) => '$count ta o\'quvchi';
+
+  @override
+  String get classStoryTitle => 'Sinf yangiliklari';
+
+  @override
+  String get classStoryEmpty => 'Hozircha yangiliklar yo\'q';
+
+  @override
+  String get classStoryLoadFailed => 'Yangiliklarni yuklashda xatolik';
+
+  @override
+  String get classStoryCommentHint => 'Izoh yozing...';
+
+  @override
+  String get classStoryDelete => 'O\'chirish';
+
+  @override
+  String get classStoryCreateTitle => 'Yangilik yaratish';
+
+  @override
+  String get classStoryPublish => 'Joylash';
+
+  @override
+  String get classStoryTitleHint => 'Sarlavha (ixtiyoriy)';
+
+  @override
+  String get classStoryBodyHint => 'Yangilik matni...';
+
+  @override
+  String get classStoryPinLabel => 'Tepaga mahkamlash';
+
+  @override
+  String get classStoryCreateFailed => 'Yangilik yaratishda xatolik';
+
+  @override
+  String get quizTitle => 'Testlar';
+  @override
+  String get quizEmpty => 'Hozircha testlar yo\'q';
+  @override
+  String get quizLoadFailed => 'Testlarni yuklashda xatolik';
+  @override
+  String get quizAttempts => 'urinish';
+  @override
+  String get quizPoints => 'ball';
+  @override
+  String get quizCreateTitle => 'Test yaratish';
+  @override
+  String get quizSave => 'Saqlash';
+  @override
+  String get quizTitleHint => 'Test nomi';
+  @override
+  String get quizDescHint => 'Izoh (ixtiyoriy)';
+  @override
+  String get quizTimeLimitHint => 'Vaqt chegarasi';
+  @override
+  String get quizQuestions => 'Savollar';
+  @override
+  String get quizQuestionN => 'Savol';
+  @override
+  String get quizQuestionHint => 'Savol matnini kiriting';
+  @override
+  String get quizOptionHint => 'Variant';
+  @override
+  String get quizAddQuestion => 'Savol qo\'shish';
+  @override
+  String get quizResultsTitle => 'Test natijalari';
+  @override
+  String get quizAvgScore => 'O\'rtacha ball';
+  @override
+  String get quizAvgPercent => 'O\'rtacha %';
+  @override
+  String get quizStudentResults => 'O\'quvchilar natijalari';
+  @override
+  String get galleryTitle => 'Foto galereya';
+  @override
+  String get galleryEmpty => 'Albomlar hozircha yo\'q';
+  @override
+  String get galleryLoadFailed => 'Galereyani yuklashda xatolik';
+  @override
+  String get galleryPhotos => 'ta rasm';
+  @override
+  String get galleryNoPhotos => 'Bu albomda rasmlar yo\'q';
+  @override
+  String get galleryCreateAlbum => 'Albom yaratish';
+  @override
+  String get galleryAlbumTitleHint => 'Albom nomi';
+  @override
+  String get galleryAlbumDescHint => 'Tavsif (ixtiyoriy)';
+  @override
+  String get galleryCreate => 'Yaratish';
+  @override
+  String get galleryCreateFailed => 'Albom yaratishda xatolik';
+  @override
+  String get galleryDeleteAlbum => 'Albomni o\'chirish';
+  @override
+  String get galleryDelete => 'O\'chirish';
+  @override
+  String get galleryUploadFailed => 'Rasmlarni yuklashda xatolik';
+  @override
+  String get behaviorTitle => 'Xulq-atvor';
+  @override
+  String get behaviorLoadFailed => 'Ma\'lumotlarni yuklashda xatolik';
+  @override
+  String get behaviorEmpty => 'Yozuvlar yo\'q';
+  @override
+  String get behaviorAll => 'Barchasi';
+  @override
+  String get behaviorPositive => 'Ijobiy';
+  @override
+  String get behaviorNegative => 'Salbiy';
+  @override
+  String get behaviorCreateTitle => 'Yangi yozuv';
+  @override
+  String get behaviorSave => 'Saqlash';
+  @override
+  String get behaviorType => 'Turi';
+  @override
+  String get behaviorStudentId => 'O\'quvchi ID';
+  @override
+  String get behaviorCategory => 'Kategoriya';
+  @override
+  String get behaviorDescription => 'Tavsif';
+  @override
+  String get behaviorPoints => 'Ball (0-100)';
+  @override
+  String get behaviorDate => 'Sana';
+  @override
+  String get behaviorCreateFailed => 'Yozuv yaratishda xatolik';
 }

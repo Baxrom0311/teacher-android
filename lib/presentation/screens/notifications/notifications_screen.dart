@@ -219,10 +219,10 @@ class _NotificationItem extends StatelessWidget {
         Icons.account_balance_wallet_rounded,
         TeacherAppColors.success,
       ),
-      'grade' => (Icons.stars_rounded, Colors.amber),
-      'attendance' => (Icons.person_off_rounded, Colors.orange),
-      'assignment' => (Icons.assignment_rounded, Colors.indigo),
-      'chat' => (Icons.chat_bubble_rounded, Colors.blue),
+      'grade' => (Icons.stars_rounded, TeacherAppColors.amber),
+      'attendance' => (Icons.person_off_rounded, TeacherAppColors.warning),
+      'assignment' => (Icons.assignment_rounded, TeacherAppColors.indigo600),
+      'chat' => (Icons.chat_bubble_rounded, TeacherAppColors.info),
       _ => (Icons.notifications_rounded, colorScheme.primary),
     };
   }

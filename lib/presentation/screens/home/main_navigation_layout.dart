@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_routes.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 import '../../widgets/sync_status_banner.dart';
@@ -48,7 +49,7 @@ class MainNavigationLayout extends ConsumerWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       color: theme.brightness == Brightness.dark
-                          ? const Color(0xFF1A1C1E).withValues(alpha: 0.8)
+                          ? TeacherAppColors.slate800.withValues(alpha: 0.8)
                           : Colors.white.withValues(alpha: 0.85),
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(

@@ -1046,4 +1046,147 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get backToHome => 'Вернуться на главную';
+
+  @override
+  String get classJournalTitle => 'Классный журнал';
+
+  @override
+  String get classJournalSelectDate => 'Выберите дату';
+
+  @override
+  String get classJournalEmpty => 'Нет данных журнала на эту дату';
+
+  @override
+  String get classJournalLoadFailed => 'Не удалось загрузить журнал';
+
+  @override
+  String classJournalStudentCount(int count) => '$count учеников';
+
+  @override
+  String get classStoryTitle => 'Новости класса';
+
+  @override
+  String get classStoryEmpty => 'Пока нет новостей';
+
+  @override
+  String get classStoryLoadFailed => 'Не удалось загрузить новости';
+
+  @override
+  String get classStoryCommentHint => 'Напишите комментарий...';
+
+  @override
+  String get classStoryDelete => 'Удалить';
+
+  @override
+  String get classStoryCreateTitle => 'Создать новость';
+
+  @override
+  String get classStoryPublish => 'Опубликовать';
+
+  @override
+  String get classStoryTitleHint => 'Заголовок (необязательно)';
+
+  @override
+  String get classStoryBodyHint => 'Текст новости...';
+
+  @override
+  String get classStoryPinLabel => 'Закрепить сверху';
+
+  @override
+  String get classStoryCreateFailed => 'Не удалось создать новость';
+
+  @override
+  String get quizTitle => 'Тесты';
+  @override
+  String get quizEmpty => 'Пока нет тестов';
+  @override
+  String get quizLoadFailed => 'Не удалось загрузить тесты';
+  @override
+  String get quizAttempts => 'попыток';
+  @override
+  String get quizPoints => 'баллов';
+  @override
+  String get quizCreateTitle => 'Создать тест';
+  @override
+  String get quizSave => 'Сохранить';
+  @override
+  String get quizTitleHint => 'Название теста';
+  @override
+  String get quizDescHint => 'Описание (необязательно)';
+  @override
+  String get quizTimeLimitHint => 'Ограничение по времени';
+  @override
+  String get quizQuestions => 'Вопросы';
+  @override
+  String get quizQuestionN => 'Вопрос';
+  @override
+  String get quizQuestionHint => 'Введите текст вопроса';
+  @override
+  String get quizOptionHint => 'Вариант';
+  @override
+  String get quizAddQuestion => 'Добавить вопрос';
+  @override
+  String get quizResultsTitle => 'Результаты теста';
+  @override
+  String get quizAvgScore => 'Ср. балл';
+  @override
+  String get quizAvgPercent => 'Ср. %';
+  @override
+  String get quizStudentResults => 'Результаты учеников';
+  @override
+  String get galleryTitle => 'Фотогалерея';
+  @override
+  String get galleryEmpty => 'Альбомов пока нет';
+  @override
+  String get galleryLoadFailed => 'Не удалось загрузить галерею';
+  @override
+  String get galleryPhotos => 'фото';
+  @override
+  String get galleryNoPhotos => 'В этом альбоме нет фотографий';
+  @override
+  String get galleryCreateAlbum => 'Создать альбом';
+  @override
+  String get galleryAlbumTitleHint => 'Название альбома';
+  @override
+  String get galleryAlbumDescHint => 'Описание (необязательно)';
+  @override
+  String get galleryCreate => 'Создать';
+  @override
+  String get galleryCreateFailed => 'Не удалось создать альбом';
+  @override
+  String get galleryDeleteAlbum => 'Удалить альбом';
+  @override
+  String get galleryDelete => 'Удалить';
+  @override
+  String get galleryUploadFailed => 'Не удалось загрузить фотографии';
+  @override
+  String get behaviorTitle => 'Поведение';
+  @override
+  String get behaviorLoadFailed => 'Не удалось загрузить данные';
+  @override
+  String get behaviorEmpty => 'Записей нет';
+  @override
+  String get behaviorAll => 'Все';
+  @override
+  String get behaviorPositive => 'Положительные';
+  @override
+  String get behaviorNegative => 'Отрицательные';
+  @override
+  String get behaviorCreateTitle => 'Новая запись';
+  @override
+  String get behaviorSave => 'Сохранить';
+  @override
+  String get behaviorType => 'Тип';
+  @override
+  String get behaviorStudentId => 'ID ученика';
+  @override
+  String get behaviorCategory => 'Категория';
+  @override
+  String get behaviorDescription => 'Описание';
+  @override
+  String get behaviorPoints => 'Баллы (0-100)';
+  @override
+  String get behaviorDate => 'Дата';
+  @override
+  String get behaviorCreateFailed => 'Не удалось создать запись';
 }

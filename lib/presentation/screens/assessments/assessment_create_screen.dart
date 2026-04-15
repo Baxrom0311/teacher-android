@@ -374,7 +374,7 @@ class _AssessmentCreateScreenState
           value: value,
           isExpanded: true,
           icon: const Icon(Icons.keyboard_arrow_down_rounded),
-          dropdownColor: const Color(0xFF1E1E1E),
+          dropdownColor: TeacherAppColors.slate800,
           borderRadius: BorderRadius.circular(16),
           items: items,
           onChanged: onChanged,

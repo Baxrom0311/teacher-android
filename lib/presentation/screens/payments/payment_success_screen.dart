@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../../core/localization/app_localizations.dart';
 
@@ -18,7 +19,7 @@ class PaymentSuccessScreen extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               Theme.of(context).colorScheme.surface,
             ],
           ),
@@ -31,12 +32,12 @@ class PaymentSuccessScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
+                color: TeacherAppColors.success.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.check_circle_rounded,
-                color: Colors.green,
+                color: TeacherAppColors.success,
                 size: 100,
               ),
             ),

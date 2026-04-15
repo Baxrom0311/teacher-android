@@ -65,7 +65,7 @@ class _SchoolSelectionScreenState extends ConsumerState<SchoolSelectionScreen> {
                   child: Text(
                     context.l10n.selectSchoolSubtitle,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha:0.7),
                       fontSize: 16,
                     ),
                   ),
@@ -197,7 +197,7 @@ class _BentoSchoolCard extends StatelessWidget {
                     Text(
                       host,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.6),
+                        color: Colors.white.withValues(alpha:0.6),
                         fontSize: 14,
                       ),
                       maxLines: 1,
@@ -208,7 +208,7 @@ class _BentoSchoolCard extends StatelessWidget {
               ),
               Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha:0.5),
                 size: 20,
               ),
             ],

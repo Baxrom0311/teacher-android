@@ -2139,6 +2139,105 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Asosiy ekranga qaytish'**
   String get backToHome;
+
+  /// No description provided for @classJournalTitle.
+  String get classJournalTitle;
+
+  /// No description provided for @classJournalSelectDate.
+  String get classJournalSelectDate;
+
+  /// No description provided for @classJournalEmpty.
+  String get classJournalEmpty;
+
+  /// No description provided for @classJournalLoadFailed.
+  String get classJournalLoadFailed;
+
+  /// No description provided for @classJournalStudentCount.
+  String classJournalStudentCount(int count);
+
+  /// No description provided for @classStoryTitle.
+  String get classStoryTitle;
+
+  /// No description provided for @classStoryEmpty.
+  String get classStoryEmpty;
+
+  /// No description provided for @classStoryLoadFailed.
+  String get classStoryLoadFailed;
+
+  /// No description provided for @classStoryCommentHint.
+  String get classStoryCommentHint;
+
+  /// No description provided for @classStoryDelete.
+  String get classStoryDelete;
+
+  /// No description provided for @classStoryCreateTitle.
+  String get classStoryCreateTitle;
+
+  /// No description provided for @classStoryPublish.
+  String get classStoryPublish;
+
+  /// No description provided for @classStoryTitleHint.
+  String get classStoryTitleHint;
+
+  /// No description provided for @classStoryBodyHint.
+  String get classStoryBodyHint;
+
+  /// No description provided for @classStoryPinLabel.
+  String get classStoryPinLabel;
+
+  /// No description provided for @classStoryCreateFailed.
+  String get classStoryCreateFailed;
+
+  /// No description provided for @quizTitle.
+  String get quizTitle;
+  String get quizEmpty;
+  String get quizLoadFailed;
+  String get quizAttempts;
+  String get quizPoints;
+  String get quizCreateTitle;
+  String get quizSave;
+  String get quizTitleHint;
+  String get quizDescHint;
+  String get quizTimeLimitHint;
+  String get quizQuestions;
+  String get quizQuestionN;
+  String get quizQuestionHint;
+  String get quizOptionHint;
+  String get quizAddQuestion;
+  String get quizResultsTitle;
+  String get quizAvgScore;
+  String get quizAvgPercent;
+  String get quizStudentResults;
+
+  String get galleryTitle;
+  String get galleryEmpty;
+  String get galleryLoadFailed;
+  String get galleryPhotos;
+  String get galleryNoPhotos;
+  String get galleryCreateAlbum;
+  String get galleryAlbumTitleHint;
+  String get galleryAlbumDescHint;
+  String get galleryCreate;
+  String get galleryCreateFailed;
+  String get galleryDeleteAlbum;
+  String get galleryDelete;
+  String get galleryUploadFailed;
+
+  String get behaviorTitle;
+  String get behaviorLoadFailed;
+  String get behaviorEmpty;
+  String get behaviorAll;
+  String get behaviorPositive;
+  String get behaviorNegative;
+  String get behaviorCreateTitle;
+  String get behaviorSave;
+  String get behaviorType;
+  String get behaviorStudentId;
+  String get behaviorCategory;
+  String get behaviorDescription;
+  String get behaviorPoints;
+  String get behaviorDate;
+  String get behaviorCreateFailed;
 }
 
 class _AppLocalizationsDelegate

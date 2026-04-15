@@ -43,14 +43,16 @@ class TeacherAppTheme {
     required Color shadowColor,
   }) {
     final isDark = brightness == Brightness.dark;
+    final seedAndPrimary = brightness == Brightness.light ? TeacherAppColors.secondaryPurple : TeacherAppColors.primaryPurple;
+
     final colorScheme =
         ColorScheme.fromSeed(
-          seedColor: TeacherAppColors.primaryPurple,
+          seedColor: seedAndPrimary,
           brightness: brightness,
         ).copyWith(
-          primary: TeacherAppColors.primaryPurple,
+          primary: seedAndPrimary,
           onPrimary: Colors.white,
-          secondary: TeacherAppColors.secondaryPurple,
+          secondary: brightness == Brightness.light ? TeacherAppColors.primaryPurple : TeacherAppColors.secondaryPurple,
           surface: surfaceColor,
           onSurface: isDark ? Colors.white : TeacherAppColors.slate900,
           surfaceContainerHighest: isDark

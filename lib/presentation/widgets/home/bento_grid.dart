@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:teacher_school_app/core/localization/l10n_extension.dart';
 
+import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_routes.dart';
 import '../common/premium_card.dart';
 import '../common/animated_pressable.dart';
@@ -24,7 +25,7 @@ class BentoGrid extends StatelessWidget {
                 title: l10n.dashboardAttendanceAction,
                 subtitle: 'Bugungi davomat',
                 icon: Icons.assignment_turned_in,
-                color: const Color(0xFF0EA5E9),
+                color: TeacherAppColors.bentoSky,
                 onTap: () => context.push(TeacherRoutes.attendanceCreate),
                 isLarge: true,
               ),
@@ -36,7 +37,7 @@ class BentoGrid extends StatelessWidget {
                 title: l10n.dashboardExcusesAction,
                 subtitle: 'Sababli',
                 icon: Icons.fact_check_outlined,
-                color: const Color(0xFFF43F5E),
+                color: TeacherAppColors.bentoRose,
                 onTap: () => context.push(TeacherRoutes.absenceReview),
               ),
             ),
@@ -51,7 +52,7 @@ class BentoGrid extends StatelessWidget {
               child: _BentoItem(
                 title: l10n.dashboardHomeworkAction,
                 icon: Icons.home_work_outlined,
-                color: const Color(0xFF10B981),
+                color: TeacherAppColors.bentoEmerald,
                 onTap: () => context.push(TeacherRoutes.homeworkList),
               ),
             ),
@@ -60,7 +61,7 @@ class BentoGrid extends StatelessWidget {
               child: _BentoItem(
                 title: l10n.dashboardConferencesAction,
                 icon: Icons.people_alt_outlined,
-                color: const Color(0xFF38BDF8),
+                color: TeacherAppColors.bentoBlue,
                 onTap: () => context.push(TeacherRoutes.conferencesManage),
               ),
             ),
@@ -76,7 +77,7 @@ class BentoGrid extends StatelessWidget {
               child: _BentoItem(
                 title: l10n.dashboardSubjectsAction,
                 icon: Icons.auto_stories_outlined,
-                color: const Color(0xFFF59E0B),
+                color: TeacherAppColors.bentoAmber,
                 onTap: () => context.push(TeacherRoutes.subjectsList),
               ),
             ),
@@ -87,7 +88,7 @@ class BentoGrid extends StatelessWidget {
                 title: l10n.dashboardAssessmentsAction,
                 subtitle: 'Baholash sistemasi',
                 icon: Icons.fact_check_outlined,
-                color: const Color(0xFF0284C7),
+                color: TeacherAppColors.bentoPrimary,
                 onTap: () => context.push(TeacherRoutes.assessmentsList),
                 isHorizontal: true,
               ),

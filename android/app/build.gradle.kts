@@ -55,7 +55,14 @@ android {
         release {
             val releaseConfig = signingConfigs.findByName("release")
             val hasReleaseKey = releaseConfig?.storeFile?.exists() == true
-            signingConfig = if (hasReleaseKey) releaseConfig else signingConfigs.getByName("debug")
+            signingConfig = if (hasReleaseKey) {
+                releaseConfig
+            } else {
+                // Development/CI da debug key ishlatiladi
+                // Production build uchun KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD set qiling
+                logger.warn("⚠️ Release keystore topilmadi — debug key ishlatilmoqda. Production uchun keystore sozlang!")
+                signingConfigs.getByName("debug")
+            }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

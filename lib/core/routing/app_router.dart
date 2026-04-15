@@ -26,6 +26,17 @@ import '../../presentation/screens/homework/homework_list_screen.dart';
 import '../../presentation/screens/library/library_screen.dart';
 import '../../presentation/screens/lessons/lesson_session_screen.dart';
 import '../../presentation/screens/lessons/today_lessons_screen.dart';
+import '../../presentation/screens/class_story/class_story_screen.dart';
+import '../../presentation/screens/class_story/story_create_screen.dart';
+import '../../presentation/screens/quiz/quiz_list_screen.dart';
+import '../../presentation/screens/quiz/quiz_create_screen.dart';
+import '../../presentation/screens/quiz/quiz_results_screen.dart';
+import '../../presentation/screens/diary/class_journal_screen.dart';
+import '../../presentation/screens/behavior/behavior_list_screen.dart';
+import '../../presentation/screens/behavior/behavior_create_screen.dart';
+import '../../presentation/screens/gallery/gallery_screen.dart';
+import '../../presentation/screens/gallery/gallery_album_screen.dart';
+import '../../data/models/gallery_model.dart';
 import '../../presentation/screens/splash/splash_screen.dart';
 import '../../presentation/screens/meals/meals_list_screen.dart';
 import '../../presentation/screens/notifications/notifications_screen.dart';
@@ -255,6 +266,66 @@ class TeacherAppRouter {
       name: TeacherRoutes.meal,
       path: TeacherRoutes.meal,
       builder: (context, state) => const MealsListScreen(),
+    ),
+    GoRoute(
+      name: TeacherRoutes.quizList,
+      path: TeacherRoutes.quizList,
+      builder: (context, state) => const TeacherQuizListScreen(),
+    ),
+    GoRoute(
+      name: TeacherRoutes.quizCreate,
+      path: TeacherRoutes.quizCreate,
+      builder: (context, state) => const QuizCreateScreen(),
+    ),
+    GoRoute(
+      name: TeacherRoutes.quizResults,
+      path: TeacherRoutes.quizResults,
+      builder: (context, state) {
+        final id = int.parse(state.pathParameters['id']!);
+        return QuizResultsScreen(quizId: id);
+      },
+    ),
+    GoRoute(
+      name: TeacherRoutes.stories,
+      path: TeacherRoutes.stories,
+      builder: (context, state) => const ClassStoryScreen(),
+    ),
+    GoRoute(
+      name: TeacherRoutes.storyCreate,
+      path: TeacherRoutes.storyCreate,
+      builder: (context, state) => const StoryCreateScreen(),
+    ),
+    GoRoute(
+      name: TeacherRoutes.behaviorList,
+      path: TeacherRoutes.behaviorList,
+      builder: (context, state) => const BehaviorListScreen(),
+    ),
+    GoRoute(
+      name: TeacherRoutes.behaviorCreate,
+      path: TeacherRoutes.behaviorCreate,
+      builder: (context, state) => const BehaviorCreateScreen(),
+    ),
+    GoRoute(
+      name: TeacherRoutes.gallery,
+      path: TeacherRoutes.gallery,
+      builder: (context, state) => const TeacherGalleryScreen(),
+    ),
+    GoRoute(
+      name: TeacherRoutes.galleryAlbum,
+      path: TeacherRoutes.galleryAlbum,
+      builder: (context, state) {
+        final album = state.extra as GalleryAlbumModel;
+        return TeacherGalleryAlbumScreen(album: album);
+      },
+    ),
+    GoRoute(
+      name: TeacherRoutes.classJournal,
+      path: TeacherRoutes.classJournal,
+      builder: (context, state) {
+        final groupId = int.parse(state.pathParameters['groupId']!);
+        final groupName = state.extra as String?;
+        return ClassJournalScreen(groupId: groupId, groupName: groupName);
+      },
     ),
     GoRoute(
       name: TeacherRoutes.payments,

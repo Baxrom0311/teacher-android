@@ -1042,4 +1042,147 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backToHome => 'Back to Home';
+
+  @override
+  String get classJournalTitle => 'Class Journal';
+
+  @override
+  String get classJournalSelectDate => 'Select date';
+
+  @override
+  String get classJournalEmpty => 'No journal data for this date';
+
+  @override
+  String get classJournalLoadFailed => 'Failed to load the journal';
+
+  @override
+  String classJournalStudentCount(int count) => '$count students';
+
+  @override
+  String get classStoryTitle => 'Class News';
+
+  @override
+  String get classStoryEmpty => 'No stories yet';
+
+  @override
+  String get classStoryLoadFailed => 'Failed to load stories';
+
+  @override
+  String get classStoryCommentHint => 'Write a comment...';
+
+  @override
+  String get classStoryDelete => 'Delete';
+
+  @override
+  String get classStoryCreateTitle => 'Create Story';
+
+  @override
+  String get classStoryPublish => 'Publish';
+
+  @override
+  String get classStoryTitleHint => 'Title (optional)';
+
+  @override
+  String get classStoryBodyHint => 'Story text...';
+
+  @override
+  String get classStoryPinLabel => 'Pin to top';
+
+  @override
+  String get classStoryCreateFailed => 'Failed to create story';
+
+  @override
+  String get quizTitle => 'Quizzes';
+  @override
+  String get quizEmpty => 'No quizzes yet';
+  @override
+  String get quizLoadFailed => 'Failed to load quizzes';
+  @override
+  String get quizAttempts => 'attempts';
+  @override
+  String get quizPoints => 'pts';
+  @override
+  String get quizCreateTitle => 'Create Quiz';
+  @override
+  String get quizSave => 'Save';
+  @override
+  String get quizTitleHint => 'Quiz title';
+  @override
+  String get quizDescHint => 'Description (optional)';
+  @override
+  String get quizTimeLimitHint => 'Time limit';
+  @override
+  String get quizQuestions => 'Questions';
+  @override
+  String get quizQuestionN => 'Question';
+  @override
+  String get quizQuestionHint => 'Enter question text';
+  @override
+  String get quizOptionHint => 'Option';
+  @override
+  String get quizAddQuestion => 'Add question';
+  @override
+  String get quizResultsTitle => 'Quiz Results';
+  @override
+  String get quizAvgScore => 'Avg. score';
+  @override
+  String get quizAvgPercent => 'Avg. %';
+  @override
+  String get quizStudentResults => 'Student Results';
+  @override
+  String get galleryTitle => 'Photo Gallery';
+  @override
+  String get galleryEmpty => 'No albums yet';
+  @override
+  String get galleryLoadFailed => 'Failed to load gallery';
+  @override
+  String get galleryPhotos => 'photos';
+  @override
+  String get galleryNoPhotos => 'No photos in this album';
+  @override
+  String get galleryCreateAlbum => 'Create Album';
+  @override
+  String get galleryAlbumTitleHint => 'Album title';
+  @override
+  String get galleryAlbumDescHint => 'Description (optional)';
+  @override
+  String get galleryCreate => 'Create';
+  @override
+  String get galleryCreateFailed => 'Failed to create album';
+  @override
+  String get galleryDeleteAlbum => 'Delete album';
+  @override
+  String get galleryDelete => 'Delete';
+  @override
+  String get galleryUploadFailed => 'Failed to upload photos';
+  @override
+  String get behaviorTitle => 'Behavior';
+  @override
+  String get behaviorLoadFailed => 'Failed to load data';
+  @override
+  String get behaviorEmpty => 'No records';
+  @override
+  String get behaviorAll => 'All';
+  @override
+  String get behaviorPositive => 'Positive';
+  @override
+  String get behaviorNegative => 'Negative';
+  @override
+  String get behaviorCreateTitle => 'New Record';
+  @override
+  String get behaviorSave => 'Save';
+  @override
+  String get behaviorType => 'Type';
+  @override
+  String get behaviorStudentId => 'Student ID';
+  @override
+  String get behaviorCategory => 'Category';
+  @override
+  String get behaviorDescription => 'Description';
+  @override
+  String get behaviorPoints => 'Points (0-100)';
+  @override
+  String get behaviorDate => 'Date';
+  @override
+  String get behaviorCreateFailed => 'Failed to create record';
 }

@@ -291,7 +291,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                         fontSize: 16,
                         color: Colors.white,
                       ),
-                      dropdownColor: const Color(0xFF1F2225),
+                      dropdownColor: TeacherAppColors.slate800,
                       decoration: InputDecoration(
                         labelText: l10n.genderLabel,
                         labelStyle: TextStyle(

@@ -35,7 +35,7 @@ class HomeworkCheckScreen extends ConsumerWidget {
           builder: (context, setState) {
             final colorScheme = Theme.of(context).colorScheme;
             return AlertDialog(
-              backgroundColor: const Color(0xFF1A1C1E),
+              backgroundColor: TeacherAppColors.slate800,
               surfaceTintColor: Colors.transparent,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(28),
